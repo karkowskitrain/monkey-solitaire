@@ -89,7 +89,7 @@
 
   /* joke sign */
   .sign{
-    position:absolute; bottom:150px; width:128px; z-index:4;
+    position:absolute; bottom:165px; width:192px; z-index:4;
     opacity:0; transform: translateY(26px) scale(.6); transform-origin:bottom center;
     transition: opacity .3s ease, transform .35s cubic-bezier(.2,1.4,.5,1);
     pointer-events:none;
@@ -99,13 +99,13 @@
   .sign.show{ opacity:1; transform: translateY(0) scale(1); }
   .sign .board{
     background: linear-gradient(#f6e2b8,#e8c98a);
-    border:3px solid #9c6b32; border-radius:8px;
-    color:#5b3a16; font-size:11px; line-height:1.15; font-weight:bold;
-    padding:7px 7px 8px; text-align:center; min-height:42px;
-    box-shadow: 0 3px 6px rgba(0,0,0,.25);
+    border:4px solid #9c6b32; border-radius:11px;
+    color:#5b3a16; font-size:16px; line-height:1.22; font-weight:bold;
+    padding:11px 11px 12px; text-align:center; min-height:62px;
+    box-shadow: 0 4px 8px rgba(0,0,0,.28);
     display:flex; align-items:center; justify-content:center;
   }
-  .sign .post{ width:7px; height:18px; background:#9c6b32; margin:0 auto; border-radius:0 0 3px 3px; }
+  .sign .post{ width:10px; height:26px; background:#9c6b32; margin:0 auto; border-radius:0 0 4px 4px; }
 
   /* ---------- Play surface ---------- */
   #game{ position:fixed; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center;
@@ -203,6 +203,43 @@
   }
   #toast.show{ opacity:1; }
 
+  /* ---------- Jungle scenery & ambient critters ---------- */
+  .jtree,#vines,#swamp,.animal{ pointer-events:none; }
+  .jtree{ position:fixed; bottom:0; z-index:1; height:84%; width:auto; }
+  .jtree.l{ left:-36px; } .jtree.r{ right:-36px; transform:scaleX(-1); }
+
+  #vines{ position:fixed; top:0; left:0; right:0; height:160px; z-index:2; }
+  #vines svg{ width:100%; height:100%; }
+  .vine{ transform-box:fill-box; transform-origin:top center; animation: sway 6s ease-in-out infinite; }
+  .vine:nth-of-type(2n){ animation-duration:7.6s; animation-delay:-2s; }
+  .vine:nth-of-type(3n){ animation-duration:8.4s; animation-delay:-4s; }
+  @keyframes sway{ 0%,100%{transform:rotate(-2deg);} 50%{transform:rotate(2deg);} }
+
+  #swamp{ position:fixed; bottom:0; left:0; right:0; height:104px; z-index:2; }
+  #swamp svg{ width:100%; height:100%; display:block; }
+
+  .animal{ position:fixed; z-index:3; }
+  .animal svg{ width:100%; height:auto; display:block; overflow:visible; }
+  .animal .eyes,.animal .pupils,.animal .openmouth{ transform-box:fill-box; }
+  .animal .eyes,.animal .pupils{ transform-origin:center; }
+  .animal .openmouth{ transform-origin:center top; transform:scaleY(.05); }
+  @keyframes look{ 0%,30%{transform:translateX(0)} 45%,62%{transform:translateX(3px)} 75%,90%{transform:translateX(-3px)} 100%{transform:translateX(0)} }
+  @keyframes mouth{ 0%,80%,100%{transform:scaleY(.05)} 87%,93%{transform:scaleY(1)} }
+  @keyframes water{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(2px)} }
+
+  #hippo{ width:122px; bottom:2px; left:30%; animation: water 5s ease-in-out infinite; }
+  #hippo .eyes{ animation: look 12s ease-in-out infinite; }
+  #hippo .openmouth{ animation: mouth 15s ease-in-out infinite; }
+  #croc{ width:150px; bottom:14px; left:50%; animation: water 6s ease-in-out infinite -1s; }
+  #croc .eyes{ animation: look 9s ease-in-out infinite; }
+  #croc .openmouth{ animation: mouth 11s ease-in-out infinite -3s; }
+  #frog{ width:58px; bottom:30px; left:19%; }
+  #frog .eyes{ animation: look 8s ease-in-out infinite; }
+  #frog .openmouth{ animation: mouth 7.5s ease-in-out infinite -2s; }
+  #owl{ width:58px; bottom:72px; left:70%; }
+  #owl .pupils{ animation: look 7s ease-in-out infinite; }
+  #owl .openmouth{ animation: mouth 9s ease-in-out infinite -5s; }
+
   @media (prefers-reduced-motion: reduce){
     *{ animation: none !important; transition: none !important; }
   }
@@ -215,6 +252,99 @@
   <div class="cloud" id="cloud2"></div>
   <div class="cloud" id="cloud3"></div>
   <div id="ground"></div>
+
+  <!-- Jungle scenery -->
+  <svg class="jtree l" viewBox="0 0 150 360">
+    <path d="M58 360 Q40 230 56 140 Q60 96 80 70 L104 80 Q80 110 86 170 Q96 260 86 360 Z" fill="#5b3f27"/>
+    <circle cx="78" cy="64" r="58" fill="#2e7d36"/><circle cx="40" cy="92" r="42" fill="#358a3e"/><circle cx="116" cy="90" r="42" fill="#287030"/>
+    <path d="M50 74 q-6 60 2 116 M96 74 q8 50 0 100" stroke="#3a7a3a" stroke-width="3" fill="none"/>
+    <circle cx="50" cy="120" r="5" fill="#43903f"/><circle cx="52" cy="150" r="5" fill="#43903f"/><circle cx="96" cy="118" r="5" fill="#43903f"/>
+    <ellipse cx="72" cy="352" rx="74" ry="30" fill="#2f7d35"/>
+  </svg>
+  <svg class="jtree r" viewBox="0 0 150 360">
+    <path d="M58 360 Q40 230 56 140 Q60 96 80 70 L104 80 Q80 110 86 170 Q96 260 86 360 Z" fill="#5b3f27"/>
+    <circle cx="78" cy="64" r="58" fill="#2e7d36"/><circle cx="40" cy="92" r="42" fill="#358a3e"/><circle cx="116" cy="90" r="42" fill="#287030"/>
+    <path d="M50 74 q-6 60 2 116 M96 74 q8 50 0 100" stroke="#3a7a3a" stroke-width="3" fill="none"/>
+    <circle cx="50" cy="120" r="5" fill="#43903f"/><circle cx="52" cy="150" r="5" fill="#43903f"/><circle cx="96" cy="118" r="5" fill="#43903f"/>
+    <ellipse cx="72" cy="352" rx="74" ry="30" fill="#2f7d35"/>
+  </svg>
+
+  <div id="vines"><svg viewBox="0 0 400 160" preserveAspectRatio="none" overflow="visible">
+    <g stroke="#3a7a3a" stroke-width="3" fill="none">
+      <path class="vine" d="M26 0 q8 60 0 122"/>
+      <path class="vine" d="M120 0 q-8 50 2 96"/>
+      <path class="vine" d="M210 0 q8 44 0 84"/>
+      <path class="vine" d="M300 0 q-6 70 2 128"/>
+      <path class="vine" d="M376 0 q6 54 0 108"/>
+    </g>
+    <g fill="#43903f">
+      <ellipse cx="26" cy="122" rx="7" ry="4"/><ellipse cx="122" cy="96" rx="7" ry="4"/><ellipse cx="210" cy="84" rx="7" ry="4"/><ellipse cx="302" cy="128" rx="7" ry="4"/><ellipse cx="376" cy="108" rx="7" ry="4"/>
+      <ellipse cx="60" cy="42" rx="9" ry="5"/><ellipse cx="250" cy="36" rx="9" ry="5"/><ellipse cx="340" cy="48" rx="9" ry="5"/>
+    </g>
+  </svg></div>
+
+  <div id="swamp"><svg viewBox="0 0 400 104" preserveAspectRatio="none">
+    <path d="M0 30 Q60 16 120 28 Q200 38 280 26 Q340 18 400 26 L400 104 L0 104 Z" fill="#357a64"/>
+    <path d="M0 46 Q70 34 140 44 Q230 54 320 42 Q360 36 400 44 L400 104 L0 104 Z" fill="#256553" opacity=".85"/>
+    <ellipse cx="78" cy="62" rx="26" ry="6" fill="#3f8f74" opacity=".6"/>
+    <ellipse cx="300" cy="72" rx="30" ry="7" fill="#3f8f74" opacity=".5"/>
+    <ellipse cx="150" cy="86" rx="22" ry="5" fill="#2c6e5a" opacity=".6"/>
+  </svg></div>
+
+  <!-- Hippo in the water -->
+  <div class="animal" id="hippo"><svg viewBox="0 0 130 84" overflow="visible">
+    <ellipse cx="65" cy="70" rx="56" ry="16" fill="#7d6f86"/>
+    <circle cx="30" cy="30" r="8" fill="#9b8aa3"/><circle cx="100" cy="30" r="8" fill="#9b8aa3"/>
+    <ellipse cx="65" cy="46" rx="50" ry="30" fill="#9b8aa3"/>
+    <g class="eyes">
+      <circle cx="44" cy="30" r="8" fill="#fff"/><circle cx="86" cy="30" r="8" fill="#fff"/>
+      <circle cx="45" cy="31" r="3.6" fill="#222"/><circle cx="85" cy="31" r="3.6" fill="#222"/>
+    </g>
+    <ellipse cx="65" cy="60" rx="34" ry="20" fill="#ab9ab3"/>
+    <ellipse cx="50" cy="56" rx="4" ry="5" fill="#5f5168"/><ellipse cx="80" cy="56" rx="4" ry="5" fill="#5f5168"/>
+    <path class="openmouth" d="M40 66 Q65 60 90 66 Q65 92 40 66 Z" fill="#c85b78"/>
+    <path d="M40 66 Q65 72 90 66" stroke="#5f5168" stroke-width="2.5" fill="none"/>
+  </svg></div>
+
+  <!-- Crocodile in the swamp -->
+  <div class="animal" id="croc"><svg viewBox="0 0 160 72" overflow="visible">
+    <path d="M6 52 Q80 34 150 50 Q150 62 80 64 Q30 64 6 58 Z" fill="#3f7a3a"/>
+    <path d="M70 48 Q112 42 158 48 Q150 58 112 58 Q86 58 70 54 Z" fill="#4f8f45"/>
+    <path class="openmouth" d="M84 52 Q120 52 156 52 Q120 74 84 60 Z" fill="#b34a62"/>
+    <path d="M84 53 Q120 52 156 53" stroke="#2c5a28" stroke-width="2" fill="none"/>
+    <path d="M90 51 l3 5 l3 -5 m7 0 l3 5 l3 -5 m7 0 l3 5 l3 -5 m7 0 l3 5 l3 -5" stroke="#fff" stroke-width="1.4" fill="none"/>
+    <g class="eyes">
+      <circle cx="72" cy="40" r="8" fill="#4f8f45"/><circle cx="72" cy="39" r="4" fill="#fff"/><circle cx="73" cy="39" r="2.2" fill="#111"/>
+    </g>
+    <circle cx="154" cy="48" r="2" fill="#2c5a28"/>
+  </svg></div>
+
+  <!-- Frog on a lily pad -->
+  <div class="animal" id="frog"><svg viewBox="0 0 72 60" overflow="visible">
+    <ellipse cx="36" cy="46" rx="30" ry="14" fill="#4aa83c"/>
+    <ellipse cx="12" cy="52" rx="10" ry="5" fill="#3f9433"/><ellipse cx="60" cy="52" rx="10" ry="5" fill="#3f9433"/>
+    <ellipse cx="36" cy="32" rx="26" ry="19" fill="#62cc50"/>
+    <g class="eyes">
+      <circle cx="22" cy="14" r="10" fill="#62cc50"/><circle cx="50" cy="14" r="10" fill="#62cc50"/>
+      <circle cx="22" cy="13" r="5.5" fill="#fff"/><circle cx="50" cy="13" r="5.5" fill="#fff"/>
+      <circle cx="23" cy="14" r="2.6" fill="#111"/><circle cx="51" cy="14" r="2.6" fill="#111"/>
+    </g>
+    <path class="openmouth" d="M16 36 Q36 34 56 36 Q36 52 16 36 Z" fill="#c23f5a"/>
+    <path d="M16 36 Q36 44 56 36" stroke="#2f7a26" stroke-width="2.5" fill="none"/>
+  </svg></div>
+
+  <!-- Owl perched -->
+  <div class="animal" id="owl"><svg viewBox="0 0 64 78" overflow="visible">
+    <path d="M14 24 l4 -18 l10 14 z" fill="#7a4e2c"/><path d="M50 24 l-4 -18 l-10 14 z" fill="#7a4e2c"/>
+    <ellipse cx="32" cy="46" rx="24" ry="28" fill="#8a5a33"/>
+    <ellipse cx="32" cy="52" rx="14" ry="20" fill="#c79a64"/>
+    <circle cx="21" cy="34" r="12" fill="#fff"/><circle cx="43" cy="34" r="12" fill="#fff"/>
+    <circle cx="21" cy="34" r="6.5" fill="#f5a623"/><circle cx="43" cy="34" r="6.5" fill="#f5a623"/>
+    <g class="pupils"><circle cx="21" cy="34" r="3" fill="#111"/><circle cx="43" cy="34" r="3" fill="#111"/></g>
+    <path d="M28 40 L36 40 L32 48 Z" fill="#e08a2a"/>
+    <path class="openmouth" d="M29 48 L35 48 L32 56 Z" fill="#a85610"/>
+    <path d="M24 74 l-3 4 M24 74 l0 4 M24 74 l3 4 M40 74 l-3 4 M40 74 l0 4 M40 74 l3 4" stroke="#e08a2a" stroke-width="2"/>
+  </svg></div>
 
   <div class="stumpwrap left" id="stumpL"></div>
   <div class="stumpwrap right" id="stumpR"></div>
@@ -756,7 +886,18 @@ const JOKES = [
   "Why don't monkeys play cards in the jungle? Too many cheetahs!",
   "Shuffle? I prefer to call it a jungle boogie.",
   "Three-card draw: my favorite kind of treetop drama.",
-  "You've got this. Probably. Mostly. Go bananas!"
+  "You've got this. Probably. Mostly. Go bananas!",
+  // jokes about the swamp neighbors
+  "That crocodile's got a SNAPPY sense of humor.",
+  "The owl keeps asking who's winning. WHOOO indeed!",
+  "Don't lily-pad around, froggy — make your move!",
+  "The hippo's poker face is enormous. Literally.",
+  "Croc says he never folds. Too many tells in those teeth!",
+  "I asked the swamp for a hint. It just gurgled at me.",
+  "Owl be honest, you're playing great tonight.",
+  "The frog only makes ribbiting moves.",
+  "Careful — the hippo called dibs on the river AND the reds.",
+  "That crocodile is all in. Always. Every single hand."
 ];
 
 const monkeys = [];
@@ -775,12 +916,13 @@ function setMonkeyCheer(on){ monkeys.forEach(mk=> mk.m.classList.toggle('cheer',
 
 function scheduleMonkey(mk, delay){
   setTimeout(function tick(){
-    if(document.hidden){ scheduleMonkey(mk, 4000); return; }
-    const r = Math.random();
-    if(r < 0.45){ // look around
+    if(document.hidden){ scheduleMonkey(mk, 6000); return; }
+    // Mostly just look around; tell a joke only ~1 in 5 times.
+    // Combined with the wider interval this makes jokes ~3x less frequent.
+    if(Math.random() < 0.8){ // look around
       const cls = Math.random()<0.5?'look':'look2';
       mk.m.classList.add(cls); mk.m.classList.add('bob');
-      if(audioUnlocked) sndMonkey();
+      if(audioUnlocked && Math.random()<0.5) sndMonkey();
       setTimeout(()=>{ mk.m.classList.remove('look','look2','bob'); }, 900);
     } else { // tell a joke
       const joke = JOKES[(Math.random()*JOKES.length)|0];
@@ -788,9 +930,9 @@ function scheduleMonkey(mk, delay){
       mk.s.classList.add('show'); mk.m.classList.add('bob');
       if(audioUnlocked) sndMonkey();
       setTimeout(()=>mk.m.classList.remove('bob'), 600);
-      setTimeout(()=>mk.s.classList.remove('show'), 3600);
+      setTimeout(()=>mk.s.classList.remove('show'), 4200);
     }
-    scheduleMonkey(mk, 6000 + Math.random()*9000);
+    scheduleMonkey(mk, 8000 + Math.random()*8000);
   }, delay);
 }
 
