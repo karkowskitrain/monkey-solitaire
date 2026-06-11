@@ -43,13 +43,13 @@
     width:96px; height:96px; border-radius:50%;
     background: radial-gradient(circle at 50% 50%, #fff6c0 0%, #ffe26b 45%, #ffcf3f 70%, rgba(255,207,63,0) 72%);
     filter: blur(1px);
-    animation: sunset 80s linear infinite;
+    animation: sunset 140s linear infinite;
   }
   @keyframes sunset{
-    0%   { transform: translate(76vw, 3vh);  opacity:1; }
-    80%  { transform: translate(22vw, 86vh); opacity:1; }
-    93%  { transform: translate(12vw, 102vh); opacity:0; }
-    100% { transform: translate(76vw, 3vh);  opacity:0; }
+    0%   { transform: translate(80vw, 4vh);  opacity:1; }
+    86%  { transform: translate(12vw, 42vh); opacity:1; }
+    93%  { transform: translate(7vw, 47vh);  opacity:0; }
+    100% { transform: translate(80vw, 4vh);  opacity:0; }
   }
   /* two clouds drifting slowly across, above the treetops */
   .cloud{
@@ -63,13 +63,13 @@
   #cloud2{ top:11%; transform:scale(.72); animation: drift 112s linear infinite; animation-delay:-46s; }
   @keyframes drift{ from{ left:-210px;} to{ left:112vw;} }
 
-  /* leafy greenery that sits behind the cards */
-  #canopy{ position:fixed; top:0; left:0; right:0; height:64%; z-index:1; }
+  /* leafy greenery only at the very top (treetops); blue sky shows behind the cards */
+  #canopy{ position:fixed; top:0; left:0; right:0; height:22%; z-index:1; }
   #canopy svg{ width:100%; height:100%; display:block; }
 
   #ground{
     position:fixed; left:0; right:0; bottom:0; height:54%; z-index:1;
-    background: linear-gradient(#6fb24a 0%, #579a3c 26%, #46862f 60%, #3a7329 100%);
+    background: linear-gradient(#a6db78 0%, #95cf63 34%, #84c552 70%, #75b945 100%);
     border-top-left-radius:55% 60px; border-top-right-radius:55% 60px;
   }
 
@@ -237,15 +237,23 @@
   @keyframes look{ 0%,30%{transform:translateX(0)} 45%,62%{transform:translateX(3px)} 75%,90%{transform:translateX(-3px)} 100%{transform:translateX(0)} }
   @keyframes mouth{ 0%,80%,100%{transform:scaleY(.05)} 87%,93%{transform:scaleY(1)} }
   @keyframes water{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(2px)} }
-  @keyframes chomp{ 0%,38%{transform:rotate(0)} 55%{transform:rotate(34deg)} 72%{transform:rotate(0)} 100%{transform:rotate(0)} }
+  /* hippo sinks fully under, then rises, once per ~2 min */
+  @keyframes hipposink{
+    0%,40%   { transform: translateX(-50%) translateY(0);    opacity:1; }
+    50%,60%  { transform: translateX(-50%) translateY(60px); opacity:0; }
+    70%,100% { transform: translateX(-50%) translateY(0);    opacity:1; }
+  }
+  /* crocodile upper jaw lifts open (lower jaw stays put), then closes */
+  @keyframes crocopen{ 0%{transform:rotate(0)} 24%{transform:rotate(-22deg)} 74%{transform:rotate(-22deg)} 100%{transform:rotate(0)} }
 
-  /* hippo half-way up the river */
-  #hippo{ width:104px; bottom:40%; left:50%; transform:translateX(-50%); animation: water 5s ease-in-out infinite; }
-  #hippo .eyes{ animation: look 12s ease-in-out infinite; }
-  #hippo .openmouth{ animation: mouth 15s ease-in-out infinite; }
-  /* crocodile at the bottom, between the monkeys, chomping toward one */
-  #croc{ width:172px; bottom:6px; left:50%; transform:translateX(-50%); }
-  #croc .jaw{ transform-box:fill-box; transform-origin:100% 0%; animation: chomp 3.4s ease-in-out infinite; }
+  /* hippo half-way up the river: grey, more adult, eyes keep looking, submerges ~every 2 min */
+  #hippo{ width:120px; bottom:40%; left:50%; transform:translateX(-50%); animation: hipposink 120s ease-in-out infinite; }
+  #hippo svg{ animation: water 5s ease-in-out infinite; }
+  #hippo .eyes{ animation: look 11s ease-in-out infinite; }
+  /* crocodile at the bottom, facing the right-hand monkey; opens only every 2-3 min (JS) */
+  #croc{ width:178px; bottom:6px; left:50%; transform:translateX(-50%); }
+  #croc .upperjaw{ transform-box:fill-box; transform-origin:0% 100%; }
+  #croc.chomping .upperjaw{ animation: crocopen 2.6s ease-in-out; }
   #croc .eyes{ transform-box:fill-box; transform-origin:center; animation: look 9s ease-in-out infinite; }
   /* frog off on the side of the swamp, away from the others */
   #frog{ width:54px; bottom:25%; left:18%; }
@@ -328,47 +336,60 @@
 
   <!-- River-swamp flowing up the hill through the middle -->
   <div id="swamp"><svg viewBox="0 0 200 400" preserveAspectRatio="none">
-    <path d="M30 400 C 18 330 96 326 66 262 C 46 214 108 198 82 140 C 66 100 104 80 92 0 L150 0 C 162 82 198 110 168 162 C 146 208 198 250 170 300 C 152 342 192 360 196 400 Z" fill="#2f6f5c"/>
-    <path d="M46 400 C 36 332 98 328 80 264 C 62 216 110 202 94 144 C 82 104 106 84 98 0 L140 0 C 150 84 184 112 156 162 C 138 208 182 250 158 300 C 144 342 178 362 182 400 Z" fill="#3a8472" opacity=".75"/>
-    <ellipse cx="92" cy="120" rx="18" ry="6" fill="#54a08c" opacity=".6"/>
-    <ellipse cx="132" cy="250" rx="20" ry="7" fill="#54a08c" opacity=".5"/>
-    <ellipse cx="108" cy="350" rx="26" ry="8" fill="#266155" opacity=".6"/>
+    <!-- winding river: wide at the bottom, wavy banks, narrowing to a tip up the hill -->
+    <path d="M34 400 C 26 360 64 352 48 312 C 34 282 70 270 54 232 C 42 204 74 196 60 156 C 52 130 78 120 70 86 C 66 60 84 52 88 30 Q 92 18 100 30 C 104 52 120 60 116 86 C 110 120 142 130 128 158 C 118 196 152 206 138 234 C 124 272 162 284 146 314 C 132 354 174 360 182 400 Z" fill="#2f6f5c"/>
+    <path d="M50 400 C 42 362 62 354 54 314 C 44 286 66 276 58 238 C 50 210 70 200 62 160 C 56 134 76 124 72 92 Q 84 50 96 92 C 100 124 128 132 120 160 C 112 198 140 206 130 236 C 120 272 150 282 140 314 C 130 352 160 360 166 400 Z" fill="#3a8472" opacity=".7"/>
+    <ellipse cx="88" cy="120" rx="14" ry="5" fill="#54a08c" opacity=".55"/>
+    <ellipse cx="128" cy="250" rx="18" ry="6" fill="#54a08c" opacity=".45"/>
+    <ellipse cx="108" cy="350" rx="24" ry="8" fill="#266155" opacity=".55"/>
   </svg></div>
 
-  <!-- Hippo half-way up the river -->
-  <div class="animal" id="hippo"><svg viewBox="0 0 130 84" overflow="visible">
-    <ellipse cx="65" cy="70" rx="56" ry="16" fill="#7f868c"/>
-    <circle cx="30" cy="30" r="8" fill="#9aa1a7"/><circle cx="100" cy="30" r="8" fill="#9aa1a7"/>
-    <ellipse cx="65" cy="46" rx="50" ry="30" fill="#9aa1a7"/>
+  <!-- Hippo half-way up the river (grey, more adult) -->
+  <div class="animal" id="hippo"><svg viewBox="0 0 140 92" overflow="visible">
+    <!-- shoulders/back at the waterline -->
+    <ellipse cx="70" cy="78" rx="60" ry="13" fill="#6f767c"/>
+    <!-- head -->
+    <path d="M28 54 Q26 32 50 27 Q70 23 90 27 Q114 32 112 54 Q112 72 70 74 Q28 72 28 54 Z" fill="#868d93"/>
+    <!-- broad muzzle -->
+    <ellipse cx="70" cy="62" rx="41" ry="20" fill="#969ca2"/>
+    <path d="M40 46 Q70 52 100 46" stroke="#777d83" stroke-width="2" fill="none" opacity=".5"/>
+    <!-- nostrils -->
+    <ellipse cx="56" cy="58" rx="4.5" ry="6" fill="#3f4448"/><ellipse cx="84" cy="58" rx="4.5" ry="6" fill="#3f4448"/>
+    <!-- closed mouth -->
+    <path d="M46 71 Q70 79 94 71" stroke="#5b6166" stroke-width="2.5" fill="none"/>
+    <!-- raised eye bumps + small ears on top -->
+    <ellipse cx="40" cy="31" rx="11" ry="10" fill="#868d93"/><ellipse cx="100" cy="31" rx="11" ry="10" fill="#868d93"/>
+    <ellipse cx="33" cy="20" rx="6" ry="5" fill="#7a8086"/><ellipse cx="107" cy="20" rx="6" ry="5" fill="#7a8086"/>
+    <ellipse cx="33" cy="20" rx="2.4" ry="2" fill="#5b6166"/><ellipse cx="107" cy="20" rx="2.4" ry="2" fill="#5b6166"/>
+    <!-- smaller, more adult eyes -->
     <g class="eyes">
-      <circle cx="44" cy="30" r="8" fill="#fff"/><circle cx="86" cy="30" r="8" fill="#fff"/>
-      <circle cx="45" cy="31" r="3.6" fill="#222"/><circle cx="85" cy="31" r="3.6" fill="#222"/>
+      <circle cx="40" cy="32" r="5.4" fill="#f4f1ea"/><circle cx="100" cy="32" r="5.4" fill="#f4f1ea"/>
+      <circle cx="41" cy="33" r="2.6" fill="#2a2622"/><circle cx="99" cy="33" r="2.6" fill="#2a2622"/>
     </g>
-    <ellipse cx="65" cy="60" rx="34" ry="20" fill="#b3b9be"/>
-    <ellipse cx="50" cy="56" rx="4" ry="5" fill="#595e63"/><ellipse cx="80" cy="56" rx="4" ry="5" fill="#595e63"/>
-    <path class="openmouth" d="M40 66 Q65 60 90 66 Q65 92 40 66 Z" fill="#c85b78"/>
-    <path d="M40 66 Q65 72 90 66" stroke="#595e63" stroke-width="2.5" fill="none"/>
   </svg></div>
 
-  <!-- Crocodile at the bottom between the monkeys, chomping (faces left) -->
-  <div class="animal" id="croc"><svg viewBox="0 0 180 96" overflow="visible">
-    <path d="M118 62 Q150 52 178 66 Q176 80 150 80 Q128 78 118 72 Z" fill="#3f7a3a"/>
-    <path d="M120 48 Q120 30 178 36" stroke="none" fill="none"/>
-    <!-- red mouth interior (revealed when the jaw drops) -->
-    <path d="M122 47 L18 51 L122 60 Z" fill="#7a2030"/>
-    <!-- upper jaw (fixed) pointing left -->
-    <path d="M122 46 Q70 30 10 38 Q42 47 72 49 Q102 50 122 50 Z" fill="#4f8f45"/>
-    <path d="M22 46 l3 -5 l3 5 m8 0 l3 -5 l3 5 m9 0 l3 -5 l3 5" stroke="#fff" stroke-width="1.4" fill="none"/>
-    <!-- lower jaw (rotates to chomp) -->
-    <g class="jaw">
-      <path d="M122 53 Q70 64 16 57 Q60 66 122 63 Z" fill="#458640"/>
-      <path d="M24 56 l3 5 l3 -5 m8 1 l3 5 l3 -5 m9 0 l3 5 l3 -5" stroke="#fff" stroke-width="1.4" fill="none"/>
+  <!-- Crocodile at the bottom, facing the right-hand monkey; only the upper jaw opens -->
+  <div class="animal" id="croc"><svg viewBox="0 0 190 100" overflow="visible">
+    <!-- tail/back in the water (left) with ridged scutes -->
+    <path d="M4 74 Q40 58 80 66 L80 82 Q40 88 8 86 Z" fill="#3c6e36"/>
+    <g fill="#34602f"><path d="M16 62 l8 -11 l8 11 z"/><path d="M34 60 l8 -12 l8 12 z"/><path d="M52 62 l7 -10 l7 10 z"/></g>
+    <!-- lower jaw (STAYS STILL) -->
+    <path d="M66 66 Q120 75 184 66 Q150 81 110 79 Q84 77 66 73 Z" fill="#3f7a3a"/>
+    <path d="M80 71 l4 7 l4 -7 m9 1 l4 7 l4 -7 m9 0 l4 7 l4 -7 m9 0 l4 7 l4 -7" stroke="#f3efe2" stroke-width="1.4" fill="none"/>
+    <!-- red mouth interior (revealed when the upper jaw lifts) -->
+    <path d="M66 63 Q120 66 184 61 Q120 70 66 69 Z" fill="#7a2030"/>
+    <!-- UPPER jaw (lifts to open) -->
+    <g class="upperjaw">
+      <path d="M66 62 Q116 44 186 56 Q150 64 110 64 Q84 64 66 64 Z" fill="#4f8f45"/>
+      <path d="M150 53 l6 -9 l6 9 z M128 55 l6 -9 l6 9 z M106 57 l5 -8 l5 8 z" fill="#46833f"/>
+      <ellipse cx="183" cy="55" rx="3" ry="2.4" fill="#2c5a28"/>
+      <path d="M82 62 l4 -6 l4 6 m9 0 l4 -6 l4 6 m9 0 l4 -6 l4 6 m9 0 l4 -6 l4 6" stroke="#f3efe2" stroke-width="1.4" fill="none"/>
+      <!-- eye on the brow ridge -->
+      <g class="eyes">
+        <path d="M70 45 Q80 33 90 45 Z" fill="#56994a"/>
+        <circle cx="80" cy="43" r="7.5" fill="#cfe8b2"/><circle cx="80" cy="43" r="4" fill="#203a16"/><circle cx="81.4" cy="41.6" r="1.3" fill="#fff"/>
+      </g>
     </g>
-    <!-- eye on top of the head -->
-    <g class="eyes">
-      <circle cx="116" cy="30" r="9" fill="#4f8f45"/><circle cx="116" cy="29" r="4.5" fill="#fff"/><circle cx="115" cy="29" r="2.4" fill="#111"/>
-    </g>
-    <circle cx="14" cy="40" r="2" fill="#2c5a28"/>
   </svg></div>
 
   <!-- Frog on a lily pad off to the side of the swamp -->
@@ -1047,6 +1068,14 @@ function init(){
 
   window.addEventListener('resize', ()=>{ sizeCards(); render(); });
   window.addEventListener('orientationchange', ()=>{ setTimeout(()=>{ sizeCards(); render(); }, 250); });
+
+  // crocodile opens its mouth only every 2-3 minutes, otherwise just watches
+  function crocChomp(){ const c=document.getElementById('croc'); if(!c) return;
+    c.classList.remove('chomping'); void c.offsetWidth; c.classList.add('chomping');
+    setTimeout(()=>c.classList.remove('chomping'), 2800); }
+  function scheduleCroc(){ setTimeout(()=>{ if(!document.hidden) crocChomp(); scheduleCroc(); }, 120000 + Math.random()*60000); }
+  setTimeout(crocChomp, 10000); // one early yawn so you can confirm it works
+  scheduleCroc();
 
   // dev helper: win-rate sampling (run __test(200) in console)
   window.__test = (n=200)=>{
