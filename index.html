@@ -43,13 +43,13 @@
     width:96px; height:96px; border-radius:50%;
     background: radial-gradient(circle at 50% 50%, #fff6c0 0%, #ffe26b 45%, #ffcf3f 70%, rgba(255,207,63,0) 72%);
     filter: blur(1px);
-    animation: sunset 280s linear infinite;
+    animation: sunset 420s linear infinite;
   }
   @keyframes sunset{
-    0%   { transform: translate(82vw, 2vh);  opacity:1; }
-    86%  { transform: translate(60vw, 42vh); opacity:1; }
-    92%  { transform: translate(58vw, 47vh); opacity:0; }
-    100% { transform: translate(82vw, 2vh);  opacity:0; }
+    0%   { transform: translate(84vw, 4vh);  opacity:1; }
+    88%  { transform: translate(10vw, 15vh); opacity:1; }
+    94%  { transform: translate(3vw, 17vh);  opacity:0; }
+    100% { transform: translate(84vw, 4vh);  opacity:0; }
   }
   /* two clouds drifting slowly across, above the treetops */
   .cloud{
@@ -218,8 +218,11 @@
   .jtree .owlmouth{ transform-box:fill-box; transform-origin:center top; transform:scaleY(.05); animation: mouth 9s ease-in-out infinite -5s; }
 
   /* river-swamp flowing up the hill through the middle */
-  #swamp{ position:fixed; left:50%; transform:translateX(-50%); bottom:0; width:min(100vw,780px); height:52%; z-index:2; }
-  #swamp svg{ width:100%; height:100%; display:block; }
+  #swamp{ position:fixed; left:50%; transform:translateX(-50%); bottom:0; width:min(100vw,780px); height:54%; z-index:2; }
+  #swamp svg{ width:100%; height:100%; display:block; overflow:visible; }
+  /* little wooden bridge over the river where it crests the hill */
+  #bridge{ position:fixed; z-index:3; top:43.5%; left:42%; transform:translateX(-50%); width:128px; pointer-events:none; }
+  #bridge svg{ width:100%; height:auto; display:block; overflow:visible; }
 
   .animal{ position:fixed; z-index:4; }
   .animal svg{ width:100%; height:auto; display:block; overflow:visible; }
@@ -322,8 +325,9 @@
 
   <!-- River-swamp flowing up the hill through the middle -->
   <div id="swamp"><svg viewBox="0 0 200 400" preserveAspectRatio="none">
-    <!-- winding sky-blue river matching the reference picture -->
-    <path d="M14 400 C 30 330 16 296 46 256 C 72 222 52 188 68 156 C 82 128 64 110 70 84 C 74 58 70 32 74 6 L 98 6 C 104 36 118 64 110 92 C 102 124 150 148 144 186 C 138 224 176 260 178 300 C 180 340 186 372 188 400 Z" fill="#4aa3df" stroke="#8fcb62" stroke-width="5"/>
+   <g transform="matrix(1.15 0 0 1 -15 0)">
+    <!-- winding sky-blue river matching the reference picture (15% wider) -->
+    <path d="M14 400 C 30 330 16 296 46 256 C 72 222 52 188 68 156 C 82 128 64 110 70 84 C 74 58 70 26 74 0 L 98 0 C 104 36 118 64 110 92 C 102 124 150 148 144 186 C 138 224 176 260 178 300 C 180 340 186 372 188 400 Z" fill="#4aa3df" stroke="#8fcb62" stroke-width="5"/>
     <!-- pale water streaks -->
     <ellipse cx="84" cy="120" rx="12" ry="4" fill="#7cc8f0" opacity=".8"/>
     <ellipse cx="122" cy="220" rx="17" ry="5" fill="#7cc8f0" opacity=".7"/>
@@ -335,6 +339,29 @@
       <ellipse cx="38" cy="192" rx="17" ry="11" fill="#7e8489"/>
       <ellipse cx="25" cy="198" rx="9" ry="6" fill="#686e74"/>
       <path d="M28 186 q10 -6 18 0" stroke="#9aa0a5" stroke-width="2" fill="none"/>
+    </g>
+   </g>
+  </svg></div>
+
+  <!-- curved wooden footbridge; the river flows under the arch -->
+  <div id="bridge"><svg viewBox="0 0 160 72" overflow="visible">
+    <!-- abutments resting on the banks -->
+    <rect x="2" y="46" width="15" height="24" rx="2" fill="#5e4026"/>
+    <rect x="143" y="46" width="15" height="24" rx="2" fill="#5e4026"/>
+    <!-- arched deck -->
+    <path d="M8 50 Q80 8 152 50 L152 58 Q80 20 8 58 Z" fill="#9c6b3a"/>
+    <!-- plank lines across the arch -->
+    <g stroke="#74502a" stroke-width="1.6">
+      <line x1="32" y1="44" x2="32" y2="52"/><line x1="54" y1="33" x2="54" y2="41"/>
+      <line x1="80" y1="28" x2="80" y2="36"/><line x1="106" y1="33" x2="106" y2="41"/>
+      <line x1="128" y1="44" x2="128" y2="52"/>
+    </g>
+    <!-- curved hand rail + posts -->
+    <path d="M12 46 Q80 6 148 46" stroke="#8a5e30" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <g stroke="#8a5e30" stroke-width="3.5" stroke-linecap="round">
+      <line x1="22" y1="47" x2="24" y2="31"/><line x1="50" y1="35" x2="51" y2="20"/>
+      <line x1="80" y1="31" x2="80" y2="15"/><line x1="110" y1="35" x2="109" y2="20"/>
+      <line x1="138" y1="47" x2="136" y2="31"/>
     </g>
   </svg></div>
 
@@ -989,7 +1016,7 @@ function scheduleMonkey(mk, delay){
       mk.s.classList.add('show'); mk.m.classList.add('bob');
       if(audioUnlocked) sndMonkey();
       setTimeout(()=>mk.m.classList.remove('bob'), 600);
-      setTimeout(()=>mk.s.classList.remove('show'), 4200);
+      setTimeout(()=>mk.s.classList.remove('show'), 7200);
     }
     scheduleMonkey(mk, 8000 + Math.random()*8000);
   }, delay);
