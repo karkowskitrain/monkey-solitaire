@@ -63,10 +63,6 @@
   #cloud2{ top:11%; transform:scale(.72); animation: drift 112s linear infinite; animation-delay:-46s; }
   @keyframes drift{ from{ left:-210px;} to{ left:112vw;} }
 
-  /* leafy greenery only at the very top (treetops); blue sky shows behind the cards */
-  #canopy{ position:fixed; top:0; left:0; right:0; height:22%; z-index:1; }
-  #canopy svg{ width:100%; height:100%; display:block; }
-
   #ground{
     position:fixed; left:0; right:0; bottom:0; height:54%; z-index:1;
     background: linear-gradient(#a6db78 0%, #95cf63 34%, #84c552 70%, #75b945 100%);
@@ -270,78 +266,82 @@
   <div id="sun"></div>
   <div class="cloud" id="cloud1"></div>
   <div class="cloud" id="cloud2"></div>
-  <div id="canopy"><svg viewBox="0 0 400 240" preserveAspectRatio="none">
-    <path d="M0 0 H400 V196 q-22 26 -44 4 q-22 24 -45 2 q-22 26 -44 4 q-23 24 -45 0 q-22 26 -44 4 q-23 24 -45 2 q-22 26 -44 2 L0 198 Z" fill="#2f7d36"/>
-    <g fill="#256b2c"><ellipse cx="60" cy="150" rx="78" ry="64"/><ellipse cx="205" cy="160" rx="92" ry="70"/><ellipse cx="350" cy="150" rx="80" ry="64"/></g>
-    <g fill="#3a9444" opacity=".55"><ellipse cx="120" cy="64" rx="52" ry="36"/><ellipse cx="285" cy="58" rx="56" ry="38"/><ellipse cx="40" cy="56" rx="44" ry="30"/><ellipse cx="372" cy="66" rx="44" ry="30"/></g>
-  </svg></div>
   <div id="ground"></div>
 
   <!-- Tall detailed trees, trunks flush to each page edge -->
   <div class="jtree l"><svg viewBox="0 0 300 800" preserveAspectRatio="none">
-    <!-- corner foliage for depth -->
-    <ellipse cx="210" cy="120" rx="120" ry="96" fill="#256b2c"/>
     <!-- trunk (straight, tapered, flush to the left edge) -->
-    <path d="M150 800 L150 250 Q151 230 170 224 L200 224 Q220 230 221 252 L218 800 Z" fill="#6e4c2c"/>
-    <path d="M150 800 L150 250 Q151 232 168 226 L181 226 L181 800 Z" fill="#5a3d22"/>
+    <path d="M150 800 L150 270 Q151 250 170 244 L200 244 Q220 250 221 272 L218 800 Z" fill="#6e4c2c"/>
+    <path d="M150 800 L150 270 Q151 252 168 246 L181 246 L181 800 Z" fill="#5a3d22"/>
     <g stroke="#4a3119" stroke-width="2.2" fill="none" opacity=".55">
-      <path d="M172 262 V792"/><path d="M192 252 V796"/><path d="M208 276 V780"/>
+      <path d="M172 290 V792"/><path d="M192 280 V796"/><path d="M208 300 V780"/>
     </g>
-    <ellipse cx="197" cy="430" rx="9" ry="15" fill="#5a3d22"/><ellipse cx="197" cy="430" rx="4" ry="8" fill="#43301a"/>
-    <!-- root flare on the inner side -->
+    <ellipse cx="197" cy="450" rx="9" ry="15" fill="#5a3d22"/><ellipse cx="197" cy="450" rx="4" ry="8" fill="#43301a"/>
     <path d="M218 800 L218 742 Q232 772 248 800 Z" fill="#6e4c2c"/>
-    <!-- vines hanging to the ground -->
-    <path class="vine" d="M224 250 q-6 250 0 540" stroke="#3a7a3a" stroke-width="3" fill="none"/>
-    <path class="vine" d="M258 232 q8 260 2 560" stroke="#3a7a3a" stroke-width="3" fill="none"/>
+    <!-- billowy leaf crown sitting on the trunk top, shaped against the sky -->
+    <g fill="#2e7d36">
+      <circle cx="172" cy="236" r="60"/><circle cx="226" cy="194" r="80"/><circle cx="288" cy="228" r="64"/>
+      <circle cx="204" cy="278" r="58"/><circle cx="264" cy="280" r="54"/>
+    </g>
+    <g fill="#256b2c" opacity=".8"><circle cx="250" cy="256" r="40"/><circle cx="188" cy="262" r="34"/></g>
+    <g fill="#3a9444" opacity=".55"><circle cx="222" cy="182" r="32"/><circle cx="286" cy="218" r="24"/></g>
+    <!-- vines hanging from the crown to the ground -->
+    <path class="vine" d="M222 286 q-6 250 0 506" stroke="#3a7a3a" stroke-width="3" fill="none"/>
+    <path class="vine" d="M262 272 q8 260 2 524" stroke="#3a7a3a" stroke-width="3" fill="none"/>
     <g fill="#43903f">
-      <ellipse cx="224" cy="430" rx="7" ry="4"/><ellipse cx="226" cy="560" rx="7" ry="4"/>
-      <ellipse cx="259" cy="400" rx="7" ry="4"/><ellipse cx="258" cy="600" rx="7" ry="4"/>
+      <ellipse cx="222" cy="450" rx="7" ry="4"/><ellipse cx="224" cy="570" rx="7" ry="4"/>
+      <ellipse cx="263" cy="420" rx="7" ry="4"/><ellipse cx="262" cy="610" rx="7" ry="4"/>
     </g>
   </svg></div>
 
   <div class="jtree r"><svg viewBox="0 0 300 800" preserveAspectRatio="none">
-    <!-- corner foliage for depth -->
-    <ellipse cx="90" cy="120" rx="120" ry="96" fill="#256b2c"/>
     <!-- trunk (straight, tapered, flush to the right edge) -->
-    <path d="M150 800 L150 250 Q149 230 130 224 L100 224 Q80 230 79 252 L82 800 Z" fill="#6e4c2c"/>
-    <path d="M150 800 L150 250 Q149 232 132 226 L119 226 L119 800 Z" fill="#5a3d22"/>
+    <path d="M150 800 L150 270 Q149 250 130 244 L100 244 Q80 250 79 272 L82 800 Z" fill="#6e4c2c"/>
+    <path d="M150 800 L150 270 Q149 252 132 246 L119 246 L119 800 Z" fill="#5a3d22"/>
     <g stroke="#4a3119" stroke-width="2.2" fill="none" opacity=".55">
-      <path d="M128 262 V792"/><path d="M108 252 V796"/><path d="M92 276 V780"/>
+      <path d="M128 290 V792"/><path d="M108 280 V796"/><path d="M92 300 V780"/>
     </g>
-    <ellipse cx="103" cy="430" rx="9" ry="15" fill="#5a3d22"/><ellipse cx="103" cy="430" rx="4" ry="8" fill="#43301a"/>
+    <ellipse cx="103" cy="450" rx="9" ry="15" fill="#5a3d22"/><ellipse cx="103" cy="450" rx="4" ry="8" fill="#43301a"/>
     <path d="M82 800 L82 742 Q68 772 52 800 Z" fill="#6e4c2c"/>
-    <!-- branch reaching inward for the owl -->
-    <path d="M118 320 Q74 304 30 292" stroke="#5e4026" stroke-width="13" fill="none" stroke-linecap="round"/>
-    <path d="M54 300 q-6 -14 -2 -26" stroke="#5e4026" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- billowy leaf crown -->
+    <g fill="#2e7d36">
+      <circle cx="128" cy="236" r="60"/><circle cx="74" cy="194" r="80"/><circle cx="12" cy="228" r="64"/>
+      <circle cx="96" cy="278" r="58"/><circle cx="36" cy="280" r="54"/>
+    </g>
+    <g fill="#256b2c" opacity=".8"><circle cx="50" cy="256" r="40"/><circle cx="112" cy="262" r="34"/></g>
+    <g fill="#3a9444" opacity=".55"><circle cx="78" cy="182" r="32"/><circle cx="14" cy="218" r="24"/></g>
+    <!-- branch dropped lower so the owl is clearly visible -->
+    <path d="M116 556 Q74 536 30 524" stroke="#5e4026" stroke-width="13" fill="none" stroke-linecap="round"/>
+    <path d="M54 532 q-6 -14 -2 -26" stroke="#5e4026" stroke-width="6" fill="none" stroke-linecap="round"/>
     <!-- OWL perched on the branch -->
     <g>
-      <path d="M37 256 l3 -12 l7 9 z" fill="#7a4e2c"/><path d="M63 256 l-3 -12 l-7 9 z" fill="#7a4e2c"/>
-      <ellipse cx="50" cy="264" rx="18" ry="21" fill="#8a5a33"/>
-      <ellipse cx="50" cy="268" rx="11" ry="14" fill="#c79a64"/>
-      <circle cx="42" cy="257" r="9" fill="#fff"/><circle cx="58" cy="257" r="9" fill="#fff"/>
-      <circle cx="42" cy="257" r="5" fill="#f5a623"/><circle cx="58" cy="257" r="5" fill="#f5a623"/>
-      <g class="owlpupils"><circle cx="42" cy="257" r="2.4" fill="#111"/><circle cx="58" cy="257" r="2.4" fill="#111"/></g>
-      <path d="M47 262 L53 262 L50 268 Z" fill="#e08a2a"/>
-      <path class="owlmouth" d="M47.5 268 L52.5 268 L50 274 Z" fill="#a85610"/>
-      <path d="M44 283 l0 6 M50 283 l0 6 M56 283 l0 6" stroke="#e08a2a" stroke-width="2"/>
+      <path d="M37 488 l3 -12 l7 9 z" fill="#7a4e2c"/><path d="M63 488 l-3 -12 l-7 9 z" fill="#7a4e2c"/>
+      <ellipse cx="50" cy="496" rx="18" ry="21" fill="#8a5a33"/>
+      <ellipse cx="50" cy="500" rx="11" ry="14" fill="#c79a64"/>
+      <circle cx="42" cy="489" r="9" fill="#fff"/><circle cx="58" cy="489" r="9" fill="#fff"/>
+      <circle cx="42" cy="489" r="5" fill="#f5a623"/><circle cx="58" cy="489" r="5" fill="#f5a623"/>
+      <g class="owlpupils"><circle cx="42" cy="489" r="2.4" fill="#111"/><circle cx="58" cy="489" r="2.4" fill="#111"/></g>
+      <path d="M47 494 L53 494 L50 500 Z" fill="#e08a2a"/>
+      <path class="owlmouth" d="M47.5 500 L52.5 500 L50 506 Z" fill="#a85610"/>
+      <path d="M44 515 l0 6 M50 515 l0 6 M56 515 l0 6" stroke="#e08a2a" stroke-width="2"/>
     </g>
-    <!-- vines hanging to the ground -->
-    <path class="vine" d="M76 250 q6 250 0 540" stroke="#3a7a3a" stroke-width="3" fill="none"/>
-    <path class="vine" d="M42 232 q-8 260 -2 560" stroke="#3a7a3a" stroke-width="3" fill="none"/>
+    <!-- vines hanging from the crown to the ground -->
+    <path class="vine" d="M78 286 q6 250 0 506" stroke="#3a7a3a" stroke-width="3" fill="none"/>
+    <path class="vine" d="M38 272 q-8 260 -2 524" stroke="#3a7a3a" stroke-width="3" fill="none"/>
     <g fill="#43903f">
-      <ellipse cx="76" cy="430" rx="7" ry="4"/><ellipse cx="74" cy="560" rx="7" ry="4"/>
-      <ellipse cx="42" cy="400" rx="7" ry="4"/><ellipse cx="44" cy="600" rx="7" ry="4"/>
+      <ellipse cx="78" cy="450" rx="7" ry="4"/><ellipse cx="76" cy="610" rx="7" ry="4"/>
+      <ellipse cx="38" cy="420" rx="7" ry="4"/><ellipse cx="40" cy="600" rx="7" ry="4"/>
     </g>
   </svg></div>
 
   <!-- River-swamp flowing up the hill through the middle -->
   <div id="swamp"><svg viewBox="0 0 200 400" preserveAspectRatio="none">
-    <!-- winding river: wide at the bottom, wavy banks, narrowing to a tip up the hill -->
-    <path d="M34 400 C 26 360 64 352 48 312 C 34 282 70 270 54 232 C 42 204 74 196 60 156 C 52 130 78 120 70 86 C 66 60 84 52 88 30 Q 92 18 100 30 C 104 52 120 60 116 86 C 110 120 142 130 128 158 C 118 196 152 206 138 234 C 124 272 162 284 146 314 C 132 354 174 360 182 400 Z" fill="#2f6f5c"/>
-    <path d="M50 400 C 42 362 62 354 54 314 C 44 286 66 276 58 238 C 50 210 70 200 62 160 C 56 134 76 124 72 92 Q 84 50 96 92 C 100 124 128 132 120 160 C 112 198 140 206 130 236 C 120 272 150 282 140 314 C 130 352 160 360 166 400 Z" fill="#3a8472" opacity=".7"/>
-    <ellipse cx="88" cy="120" rx="14" ry="5" fill="#54a08c" opacity=".55"/>
-    <ellipse cx="128" cy="250" rx="18" ry="6" fill="#54a08c" opacity=".45"/>
-    <ellipse cx="108" cy="350" rx="24" ry="8" fill="#266155" opacity=".55"/>
+    <!-- straight river: wide at the bottom, tapering to a tip up the hill -->
+    <path d="M40 400 C 52 280 70 150 84 50 Q90 30 98 50 C 110 150 132 280 160 400 Z" fill="#2f6f5c"/>
+    <path d="M56 400 C 66 282 80 156 90 64 Q95 48 100 64 C 110 156 126 282 146 400 Z" fill="#3a8472" opacity=".7"/>
+    <ellipse cx="92" cy="120" rx="14" ry="5" fill="#54a08c" opacity=".55"/>
+    <ellipse cx="106" cy="250" rx="18" ry="6" fill="#54a08c" opacity=".45"/>
+    <ellipse cx="100" cy="350" rx="22" ry="7" fill="#266155" opacity=".55"/>
   </svg></div>
 
   <!-- Hippo half-way up the river (grey, more adult) -->
