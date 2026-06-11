@@ -533,7 +533,7 @@ function movableRun(col, i){
 
 function flipExposed(col){
   const t = state.tableau[col];
-  if(t.length && !t[t.length-1].up){ t[t.length-1].up = true; sndFlipless(); }
+  if(t.length && !t[t.length-1].up){ t[t.length-1].up = true; sndFlipless(); encourage(); }
 }
 
 /* ============================================================
@@ -560,6 +560,7 @@ function moveStackToTab(cards, srcLoc, targetCol){
   cards.forEach(c=>state.tableau[targetCol].push(c));
   if(srcLoc.loc[0]==='t') flipExposed(+srcLoc.loc.slice(1));
   sndPlace();
+  if(cards.length>1) encourage();
 }
 function moveToFoundation(card, srcLoc){
   if(srcLoc.loc==='waste'){ state.waste.pop(); }
@@ -567,6 +568,7 @@ function moveToFoundation(card, srcLoc){
   state.foundations[card.s].push(card);
   if(srcLoc.loc[0]==='t') flipExposed(+srcLoc.loc.slice(1));
   sndFoundation();
+  encourage();
 }
 function isWin(){ return state.foundations.reduce((a,f)=>a+f.length,0)===52; }
 function noFaceDown(){ return state.tableau.every(t=>t.every(c=>c.up)); }
@@ -996,7 +998,33 @@ const JOKES = [
   "Crocodile: all snap, no strategy.",
   "Hippo's so wide the river goes around him. Twice.",
   "Hoot all you want, owl — hooting never beat a King.",
-  "The croc folds laundry better than he folds cards. And he can't fold laundry."
+  "The croc folds laundry better than he folds cards. And he can't fold laundry.",
+  // more teasing of the swamp neighbours
+  "The hippo tried solitaire once. Ate the whole deck.",
+  "Owl asked for a hint. I said: blink less, win more.",
+  "Croc's poker face? He doesn't have one — he has eighty.",
+  "Frog leaps before he looks. Explains his win rate.",
+  "The hippo's idea of a bath IS the entire river.",
+  "Owl's up all night and STILL can't spot a red Queen.",
+  "Fewer teeth, more thinking, croc — give it a try.",
+  "Frog, catching that fly was your best move all day.",
+  "Hippo, the diet starts tomorrow. It always starts tomorrow."
+];
+
+// shown when the player makes a strong move (card home, a reveal, or a big move)
+const ENCOURAGE = [
+  "Now THAT was a clever move — nicely done!",
+  "Look at you go — those foundations are filling up!",
+  "Smooth play! Even the owl looked impressed.",
+  "You're on fire — keep stacking, champ!",
+  "Great eye! That was exactly the move.",
+  "Almost there — the whole jungle's rooting for you!",
+  "Ooh, slick! You make this look easy.",
+  "Nice one! The monkeys approve!",
+  "Boom! Straight home. Love it.",
+  "Yes! That's how the pros do it.",
+  "Sharp — you spotted that one early!",
+  "Keep it up, victory's in sight!"
 ];
 
 const monkeys = [];
@@ -1013,6 +1041,28 @@ function buildScene(){
 }
 function setMonkeyCheer(on){ monkeys.forEach(mk=> mk.m.classList.toggle('cheer', on)); }
 
+// raise a monkey's sign with the given text
+function showSign(mk, text){
+  mk.s.querySelector('.board').textContent = text;
+  mk.s.classList.add('show'); mk.m.classList.add('bob');
+  if(audioUnlocked) sndMonkey();
+  setTimeout(()=>mk.m.classList.remove('bob'), 600);
+  clearTimeout(mk._hide);
+  mk._hide = setTimeout(()=>mk.s.classList.remove('show'), 7200);
+}
+
+// pop an encouragement sign when the player is doing well (throttled so it stays special)
+let lastEncourage = 0;
+function encourage(){
+  if(busy || !monkeys.length) return;
+  const now = Date.now();
+  if(now - lastEncourage < 14000) return;   // cooldown
+  if(Math.random() > 0.45) return;          // only some of the time
+  lastEncourage = now;
+  const mk = monkeys[(Math.random()*monkeys.length)|0];
+  showSign(mk, ENCOURAGE[(Math.random()*ENCOURAGE.length)|0]);
+}
+
 function scheduleMonkey(mk, delay){
   setTimeout(function tick(){
     if(document.hidden){ scheduleMonkey(mk, 6000); return; }
@@ -1024,12 +1074,7 @@ function scheduleMonkey(mk, delay){
       if(audioUnlocked && Math.random()<0.5) sndMonkey();
       setTimeout(()=>{ mk.m.classList.remove('look','look2','bob'); }, 900);
     } else { // tell a joke
-      const joke = JOKES[(Math.random()*JOKES.length)|0];
-      mk.s.querySelector('.board').textContent = joke;
-      mk.s.classList.add('show'); mk.m.classList.add('bob');
-      if(audioUnlocked) sndMonkey();
-      setTimeout(()=>mk.m.classList.remove('bob'), 600);
-      setTimeout(()=>mk.s.classList.remove('show'), 7200);
+      showSign(mk, JOKES[(Math.random()*JOKES.length)|0]);
     }
     scheduleMonkey(mk, 8000 + Math.random()*8000);
   }, delay);
