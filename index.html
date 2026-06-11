@@ -239,7 +239,7 @@
     70%,100% { transform: translateX(-50%) translateY(0);    opacity:1; }
   }
   /* crocodile upper jaw lifts open (lower jaw stays put), then closes */
-  @keyframes crocopen{ 0%{transform:rotate(0)} 24%{transform:rotate(-22deg)} 74%{transform:rotate(-22deg)} 100%{transform:rotate(0)} }
+  @keyframes crocopen{ 0%{transform:rotate(0)} 22%{transform:rotate(-44deg)} 76%{transform:rotate(-44deg)} 100%{transform:rotate(0)} }
 
   /* hippo half-way up the river: grey, more adult, eyes keep looking, submerges ~every 2 min */
   #hippo{ width:100px; bottom:34%; left:50%; transform:translateX(-50%); animation: hipposink 120s ease-in-out infinite; }
@@ -983,7 +983,20 @@ const JOKES = [
   "Owl be honest, you're playing great tonight.",
   "The frog only makes ribbiting moves.",
   "Careful — the hippo called dibs on the river AND the reds.",
-  "That crocodile is all in. Always. Every single hand."
+  "That crocodile is all in. Always. Every single hand.",
+  // monkeys teasing the swamp neighbours
+  "That croc smiles a lot for someone with breath like swamp gas.",
+  "Hippo, the river called — it wants its space back.",
+  "The owl thinks he's so wise, but he can't even shuffle.",
+  "Nice lily pad, frog. Did the swamp's worst decorator do it?",
+  "Croc's got 80 teeth and exactly zero card sense.",
+  "Hippo, sweating in the water? Bold look.",
+  "The owl stares all night and STILL misses every move.",
+  "That frog's been on the same pad for an hour. Riveting.",
+  "Crocodile: all snap, no strategy.",
+  "Hippo's so wide the river goes around him. Twice.",
+  "Hoot all you want, owl — hooting never beat a King.",
+  "The croc folds laundry better than he folds cards. And he can't fold laundry."
 ];
 
 const monkeys = [];
@@ -1005,7 +1018,7 @@ function scheduleMonkey(mk, delay){
     if(document.hidden){ scheduleMonkey(mk, 6000); return; }
     // Mostly just look around; tell a joke only ~1 in 5 times.
     // Combined with the wider interval this makes jokes ~3x less frequent.
-    if(Math.random() < 0.8){ // look around
+    if(Math.random() < 0.78){ // look around
       const cls = Math.random()<0.5?'look':'look2';
       mk.m.classList.add(cls); mk.m.classList.add('bob');
       if(audioUnlocked && Math.random()<0.5) sndMonkey();
