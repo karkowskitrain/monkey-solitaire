@@ -43,13 +43,13 @@
     width:96px; height:96px; border-radius:50%;
     background: radial-gradient(circle at 50% 50%, #fff6c0 0%, #ffe26b 45%, #ffcf3f 70%, rgba(255,207,63,0) 72%);
     filter: blur(1px);
-    animation: sunset 140s linear infinite;
+    animation: sunset 280s linear infinite;
   }
   @keyframes sunset{
-    0%   { transform: translate(80vw, 4vh);  opacity:1; }
-    86%  { transform: translate(12vw, 42vh); opacity:1; }
-    93%  { transform: translate(7vw, 47vh);  opacity:0; }
-    100% { transform: translate(80vw, 4vh);  opacity:0; }
+    0%   { transform: translate(82vw, 2vh);  opacity:1; }
+    86%  { transform: translate(60vw, 42vh); opacity:1; }
+    92%  { transform: translate(58vw, 47vh); opacity:0; }
+    100% { transform: translate(82vw, 2vh);  opacity:0; }
   }
   /* two clouds drifting slowly across, above the treetops */
   .cloud{
@@ -207,17 +207,13 @@
   }
   #toast.show{ opacity:1; }
 
-  /* ---------- Jungle: side trees, vines, river-swamp, critters ---------- */
+  /* ---------- Jungle: side trees, river, critters ---------- */
   .jtree,#swamp,.animal{ pointer-events:none; }
   /* tall trees, half off each edge (only the inner half shows) */
   .jtree{ position:fixed; top:0; bottom:0; width:300px; z-index:3; }
   .jtree svg{ width:100%; height:100%; display:block; overflow:visible; }
   .jtree.l{ left:-150px; }
   .jtree.r{ right:-150px; }
-  .vine{ transform-box:fill-box; transform-origin:top center; animation: sway 6s ease-in-out infinite; }
-  .vine:nth-of-type(2n){ animation-duration:7.6s; animation-delay:-2s; }
-  .vine:nth-of-type(3n){ animation-duration:8.4s; animation-delay:-4s; }
-  @keyframes sway{ 0%,100%{transform:rotate(-1.5deg);} 50%{transform:rotate(1.5deg);} }
   .jtree .owlpupils{ transform-box:fill-box; transform-origin:center; animation: look 7s ease-in-out infinite; }
   .jtree .owlmouth{ transform-box:fill-box; transform-origin:center top; transform:scaleY(.05); animation: mouth 9s ease-in-out infinite -5s; }
 
@@ -243,7 +239,7 @@
   @keyframes crocopen{ 0%{transform:rotate(0)} 24%{transform:rotate(-22deg)} 74%{transform:rotate(-22deg)} 100%{transform:rotate(0)} }
 
   /* hippo half-way up the river: grey, more adult, eyes keep looking, submerges ~every 2 min */
-  #hippo{ width:120px; bottom:40%; left:50%; transform:translateX(-50%); animation: hipposink 120s ease-in-out infinite; }
+  #hippo{ width:100px; bottom:34%; left:50%; transform:translateX(-50%); animation: hipposink 120s ease-in-out infinite; }
   #hippo svg{ animation: water 5s ease-in-out infinite; }
   #hippo .eyes{ animation: look 11s ease-in-out infinite; }
   /* crocodile at the bottom, facing the right-hand monkey; opens only every 2-3 min (JS) */
@@ -252,7 +248,7 @@
   #croc.chomping .upperjaw{ animation: crocopen 2.6s ease-in-out; }
   #croc .eyes{ transform-box:fill-box; transform-origin:center; animation: look 9s ease-in-out infinite; }
   /* frog off on the side of the swamp, away from the others */
-  #frog{ width:54px; bottom:25%; left:18%; }
+  #frog{ width:54px; bottom:21%; left:57%; }
   #frog .eyes{ animation: look 8s ease-in-out infinite; }
   #frog .openmouth{ animation: mouth 7.5s ease-in-out infinite -2s; }
 
@@ -286,13 +282,6 @@
     </g>
     <g fill="#256b2c" opacity=".8"><circle cx="250" cy="256" r="40"/><circle cx="188" cy="262" r="34"/></g>
     <g fill="#3a9444" opacity=".55"><circle cx="222" cy="182" r="32"/><circle cx="286" cy="218" r="24"/></g>
-    <!-- vines hanging from the crown to the ground -->
-    <path class="vine" d="M222 286 q-6 250 0 506" stroke="#3a7a3a" stroke-width="3" fill="none"/>
-    <path class="vine" d="M262 272 q8 260 2 524" stroke="#3a7a3a" stroke-width="3" fill="none"/>
-    <g fill="#43903f">
-      <ellipse cx="222" cy="450" rx="7" ry="4"/><ellipse cx="224" cy="570" rx="7" ry="4"/>
-      <ellipse cx="263" cy="420" rx="7" ry="4"/><ellipse cx="262" cy="610" rx="7" ry="4"/>
-    </g>
   </svg></div>
 
   <div class="jtree r"><svg viewBox="0 0 300 800" preserveAspectRatio="none">
@@ -329,79 +318,75 @@
       <path class="owlmouth" d="M47.5 438 L52.5 438 L50 444 Z" fill="#a85610"/>
       <path d="M44 453 l0 6 M50 453 l0 6 M56 453 l0 6" stroke="#e08a2a" stroke-width="2"/>
     </g>
-    <!-- vines hanging from the crown to the ground -->
-    <path class="vine" d="M78 286 q6 250 0 506" stroke="#3a7a3a" stroke-width="3" fill="none"/>
-    <path class="vine" d="M38 272 q-8 260 -2 524" stroke="#3a7a3a" stroke-width="3" fill="none"/>
-    <g fill="#43903f">
-      <ellipse cx="78" cy="450" rx="7" ry="4"/><ellipse cx="76" cy="610" rx="7" ry="4"/>
-      <ellipse cx="38" cy="420" rx="7" ry="4"/><ellipse cx="40" cy="600" rx="7" ry="4"/>
-    </g>
   </svg></div>
 
   <!-- River-swamp flowing up the hill through the middle -->
   <div id="swamp"><svg viewBox="0 0 200 400" preserveAspectRatio="none">
-    <!-- river stays wide from the bottom all the way up the hill -->
-    <path d="M30 400 L56 14 Q100 2 144 14 L170 400 Z" fill="#2f6f5c"/>
-    <path d="M48 400 L70 18 Q100 8 130 18 L152 400 Z" fill="#3a8472" opacity=".7"/>
-    <ellipse cx="84" cy="110" rx="16" ry="5" fill="#54a08c" opacity=".5"/>
-    <ellipse cx="118" cy="240" rx="20" ry="6" fill="#54a08c" opacity=".45"/>
-    <ellipse cx="96" cy="350" rx="26" ry="8" fill="#266155" opacity=".55"/>
-  </svg></div>
-
-  <!-- Hippo half-way up the river (grey, more adult) -->
-  <div class="animal" id="hippo"><svg viewBox="0 0 140 92" overflow="visible">
-    <!-- shoulders/back at the waterline -->
-    <ellipse cx="70" cy="78" rx="60" ry="13" fill="#6f767c"/>
-    <!-- head -->
-    <path d="M28 54 Q26 32 50 27 Q70 23 90 27 Q114 32 112 54 Q112 72 70 74 Q28 72 28 54 Z" fill="#868d93"/>
-    <!-- broad muzzle -->
-    <ellipse cx="70" cy="62" rx="41" ry="20" fill="#969ca2"/>
-    <path d="M40 46 Q70 52 100 46" stroke="#777d83" stroke-width="2" fill="none" opacity=".5"/>
-    <!-- nostrils -->
-    <ellipse cx="56" cy="58" rx="4.5" ry="6" fill="#3f4448"/><ellipse cx="84" cy="58" rx="4.5" ry="6" fill="#3f4448"/>
-    <!-- closed mouth -->
-    <path d="M46 71 Q70 79 94 71" stroke="#5b6166" stroke-width="2.5" fill="none"/>
-    <!-- raised eye bumps + small ears on top -->
-    <ellipse cx="40" cy="31" rx="11" ry="10" fill="#868d93"/><ellipse cx="100" cy="31" rx="11" ry="10" fill="#868d93"/>
-    <ellipse cx="33" cy="20" rx="6" ry="5" fill="#7a8086"/><ellipse cx="107" cy="20" rx="6" ry="5" fill="#7a8086"/>
-    <ellipse cx="33" cy="20" rx="2.4" ry="2" fill="#5b6166"/><ellipse cx="107" cy="20" rx="2.4" ry="2" fill="#5b6166"/>
-    <!-- smaller, more adult eyes -->
-    <g class="eyes">
-      <circle cx="40" cy="32" r="5.4" fill="#f4f1ea"/><circle cx="100" cy="32" r="5.4" fill="#f4f1ea"/>
-      <circle cx="41" cy="33" r="2.6" fill="#2a2622"/><circle cx="99" cy="33" r="2.6" fill="#2a2622"/>
+    <!-- winding sky-blue river matching the reference picture -->
+    <path d="M14 400 C 30 330 16 296 46 256 C 72 222 52 188 68 156 C 82 128 64 110 70 84 C 74 58 70 32 74 6 L 98 6 C 104 36 118 64 110 92 C 102 124 150 148 144 186 C 138 224 176 260 178 300 C 180 340 186 372 188 400 Z" fill="#4aa3df" stroke="#8fcb62" stroke-width="5"/>
+    <!-- pale water streaks -->
+    <ellipse cx="84" cy="120" rx="12" ry="4" fill="#7cc8f0" opacity=".8"/>
+    <ellipse cx="122" cy="220" rx="17" ry="5" fill="#7cc8f0" opacity=".7"/>
+    <ellipse cx="96" cy="318" rx="22" ry="6" fill="#7cc8f0" opacity=".6"/>
+    <ellipse cx="142" cy="368" rx="18" ry="6" fill="#3c8fc9" opacity=".5"/>
+    <!-- rock and grass tufts on the left bank -->
+    <g>
+      <path d="M20 192 q-3 -11 -8 -16 M24 192 q0 -13 3 -18 M58 198 q4 -10 9 -13 M54 199 q1 -9 -2 -15" stroke="#2f8a3a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="38" cy="192" rx="17" ry="11" fill="#7e8489"/>
+      <ellipse cx="25" cy="198" rx="9" ry="6" fill="#686e74"/>
+      <path d="M28 186 q10 -6 18 0" stroke="#9aa0a5" stroke-width="2" fill="none"/>
     </g>
   </svg></div>
 
-  <!-- Crocodile at the bottom, facing the right-hand monkey; cheeky, only the upper jaw opens -->
-  <div class="animal" id="croc"><svg viewBox="0 0 192 104" overflow="visible">
-    <!-- tail + curvy back -->
-    <path d="M2 80 Q30 56 66 62 Q92 66 92 84 Q54 92 8 88 Z" fill="#3c6e36"/>
-    <g fill="#34602f"><path d="M14 64 l8 -12 l8 12 z"/><path d="M32 60 l9 -13 l9 13 z"/><path d="M52 62 l8 -11 l8 11 z"/></g>
-    <!-- jowl / cheek contour for more shape -->
-    <path d="M62 64 Q58 44 82 40 Q104 38 120 50" stroke="#34602f" stroke-width="2.5" fill="none" opacity=".5"/>
-    <!-- lower jaw (STAYS STILL) with a cheeky upturn at the back -->
-    <path d="M62 64 Q66 56 74 60 Q120 76 186 66 Q150 82 110 80 Q84 78 64 72 Z" fill="#3f7a3a"/>
-    <path d="M84 71 l4 7 l4 -7 m9 1 l4 7 l4 -7 m9 0 l4 7 l4 -7 m9 0 l4 7 l4 -7" stroke="#f3efe2" stroke-width="1.4" fill="none"/>
-    <!-- red mouth interior -->
-    <path d="M64 62 Q120 66 186 60 Q120 70 64 68 Z" fill="#7a2030"/>
-    <!-- UPPER jaw (lifts to open) -->
+  <!-- Hippo in the river bend, drawn to match the reference picture -->
+  <div class="animal" id="hippo"><svg viewBox="0 0 140 104" overflow="visible">
+    <!-- ripple ring at the waterline -->
+    <ellipse cx="70" cy="92" rx="62" ry="8" fill="none" stroke="#cfeafc" stroke-width="3" opacity=".8"/>
+    <!-- paws resting on the water -->
+    <ellipse cx="30" cy="88" rx="13" ry="9" fill="#98a1a9"/>
+    <ellipse cx="110" cy="88" rx="13" ry="9" fill="#98a1a9"/>
+    <!-- ears -->
+    <circle cx="44" cy="16" r="10" fill="#98a1a9"/><circle cx="44" cy="16" r="5" fill="#79828a"/>
+    <circle cx="96" cy="16" r="10" fill="#98a1a9"/><circle cx="96" cy="16" r="5" fill="#79828a"/>
+    <!-- round head -->
+    <path d="M26 58 Q24 18 70 16 Q116 18 114 58 L26 58 Z" fill="#98a1a9"/>
+    <!-- wide muzzle -->
+    <ellipse cx="70" cy="66" rx="46" ry="26" fill="#a6afb6"/>
+    <!-- eyes (whites fixed, pupils glance around) -->
+    <circle cx="56" cy="38" r="10" fill="#fff"/><circle cx="84" cy="38" r="10" fill="#fff"/>
+    <g class="eyes"><circle cx="57" cy="40" r="4.6" fill="#23282c"/><circle cx="85" cy="40" r="4.6" fill="#23282c"/></g>
+    <!-- oval nostrils -->
+    <ellipse cx="56" cy="62" rx="5" ry="7" fill="#454c52"/><ellipse cx="84" cy="62" rx="5" ry="7" fill="#454c52"/>
+    <!-- gentle smile -->
+    <path d="M50 78 Q70 88 90 78" stroke="#454c52" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  </svg></div>
+
+  <!-- Crocodile at the bottom, drawn to match the reference picture; only the upper jaw opens -->
+  <div class="animal" id="croc"><svg viewBox="0 0 200 104" overflow="visible">
+    <!-- ripple at the waterline -->
+    <ellipse cx="100" cy="96" rx="88" ry="7" fill="#7cc8f0" opacity=".5"/>
+    <!-- scaly tail to the left -->
+    <path d="M6 88 Q20 64 48 66 Q66 68 74 84 Q40 96 6 88 Z" fill="#4e8c3a"/>
+    <g fill="#3f7530"><path d="M14 72 l7 -12 l7 12 z"/><path d="M30 68 l7 -12 l7 12 z"/><path d="M46 68 l7 -11 l7 11 z"/></g>
+    <!-- body hump -->
+    <path d="M58 88 Q60 64 88 62 Q112 62 116 84 Q88 94 58 88 Z" fill="#5d9a45"/>
+    <!-- lower jaw (STAYS STILL) -->
+    <path d="M86 75 L190 73 Q194 79 178 84 Q132 92 94 84 Q86 80 86 75 Z" fill="#5d9a45"/>
+    <!-- red mouth interior (revealed when the upper jaw lifts) -->
+    <path d="M86 69 L192 68 L190 74 L86 75 Z" fill="#7a2030"/>
+    <!-- big white zigzag teeth along the mouth line -->
+    <path d="M88 70 l7 8 l7 -8 l7 8 l7 -8 l7 8 l7 -8 l7 8 l7 -8 l7 8 l7 -8 l7 8 l7 -8 l7 8 l7 -8 L190 70 Z" fill="#ffffff"/>
+    <!-- UPPER jaw with bulgy eyes on top -->
     <g class="upperjaw">
-      <path d="M64 60 Q116 42 188 54 Q150 63 110 63 Q84 63 64 63 Z" fill="#4f8f45"/>
-      <path d="M152 51 l6 -9 l6 9 z M130 53 l6 -9 l6 9 z M108 55 l5 -8 l5 8 z" fill="#46833f"/>
-      <ellipse cx="184" cy="53" rx="3.6" ry="2.8" fill="#2c5a28"/>
-      <path d="M86 61 l4 -6 l4 6 m9 0 l4 -6 l4 6 m9 0 l4 -6 l4 6" stroke="#f3efe2" stroke-width="1.4" fill="none"/>
-      <!-- bushy brow ridge -->
-      <path d="M62 38 Q80 26 98 38" stroke="#3f7a3a" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <!-- sly, half-lidded eye -->
+      <path d="M88 70 Q86 52 108 48 L150 50 Q186 52 194 64 Q196 69 190 70 Z" fill="#6aa84f"/>
+      <ellipse cx="184" cy="58" rx="4" ry="3" fill="#3f7530"/>
+      <ellipse cx="184" cy="58" rx="1.8" ry="1.3" fill="#2c5226"/>
       <g class="eyes">
-        <ellipse cx="80" cy="44" rx="9" ry="9.5" fill="#56994a"/>
-        <circle cx="82" cy="45" r="7.4" fill="#eaf6d6"/>
-        <circle cx="84" cy="46" r="4" fill="#203a16"/><circle cx="85.4" cy="44.6" r="1.3" fill="#fff"/>
-        <path d="M72 44 Q82 37 91 43" stroke="#3f7a3a" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <circle cx="104" cy="40" r="14" fill="#6aa84f"/><circle cx="130" cy="40" r="14" fill="#6aa84f"/>
+        <circle cx="104" cy="38" r="9.5" fill="#fff"/><circle cx="130" cy="38" r="9.5" fill="#fff"/>
+        <circle cx="106" cy="40" r="4.6" fill="#1a2a12"/><circle cx="132" cy="40" r="4.6" fill="#1a2a12"/>
       </g>
     </g>
-    <!-- cheeky snaggletooth poking up over the lip -->
-    <path d="M98 66 l4 -12 l4 12 z" fill="#f7f4ea"/>
   </svg></div>
 
   <!-- Frog on a lily pad off to the side of the swamp -->
