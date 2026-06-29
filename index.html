@@ -37,19 +37,54 @@
     background: linear-gradient(#3f8fd6 0%, #6fb4e6 38%, #bfe2f3 70%, #e8f6ff 100%);
     filter: blur(5px);
   }
-  /* sun starts top-right above the trees and slowly arcs down until it sets */
+  /* ---------- day / night cycle (sun then moon, ~14 min round trip) ---------- */
   #sun{
     position:fixed; z-index:2; top:0; left:0;
     width:96px; height:96px; border-radius:50%;
     background: radial-gradient(circle at 50% 50%, #fff6c0 0%, #ffe26b 45%, #ffcf3f 70%, rgba(255,207,63,0) 72%);
     filter: blur(1px);
-    animation: sunset 420s linear infinite;
+    animation: suncycle 840s linear infinite;
   }
-  @keyframes sunset{
-    0%   { transform: translate(84vw, 4vh);  opacity:1; }
-    88%  { transform: translate(10vw, 15vh); opacity:1; }
-    94%  { transform: translate(3vw, 17vh);  opacity:0; }
-    100% { transform: translate(84vw, 4vh);  opacity:0; }
+  #moon{
+    position:fixed; z-index:2; top:0; left:0;
+    width:80px; height:80px; border-radius:50%;
+    background: radial-gradient(circle at 38% 38%, #ffffff 0%, #eef2ff 46%, #cad4f0 68%, rgba(202,212,240,0) 72%);
+    filter: blur(.4px);
+    animation: mooncycle 840s linear infinite;
+  }
+  /* sun crosses in the day half, then hides; moon crosses the night half on the same path/speed */
+  @keyframes suncycle{
+    0%   { transform: translate(84vw,4vh);  opacity:1; }
+    41%  { transform: translate(12vw,14vh); opacity:1; }
+    45%  { transform: translate(6vw,16vh);  opacity:0; }
+    96%  { transform: translate(84vw,4vh);  opacity:0; }
+    100% { transform: translate(84vw,4vh);  opacity:1; }
+  }
+  @keyframes mooncycle{
+    0%,49% { transform: translate(84vw,4vh);  opacity:0; }
+    50%    { transform: translate(84vw,4vh);  opacity:1; }
+    91%    { transform: translate(12vw,14vh); opacity:1; }
+    95%    { transform: translate(6vw,16vh);  opacity:0; }
+    100%   { transform: translate(84vw,4vh);  opacity:0; }
+  }
+  /* night darkens the sky behind everything */
+  #night{ position:fixed; inset:0; z-index:0; background: linear-gradient(#0a1026, #16203f); opacity:0; animation: nightcycle 840s linear infinite; }
+  @keyframes nightcycle{ 0%,41%{opacity:0;} 50%,91%{opacity:.9;} 99%,100%{opacity:0;} }
+  /* stars replace the clouds at night and twinkle at different times */
+  #stars{ position:fixed; top:0; left:0; right:0; height:36%; z-index:1; opacity:0; pointer-events:none; animation: starcycle 840s linear infinite; }
+  @keyframes starcycle{ 0%,44%{opacity:0;} 53%,90%{opacity:1;} 98%,100%{opacity:0;} }
+  #stars i{ position:absolute; width:3px; height:3px; border-radius:50%; background:#fff; box-shadow:0 0 5px #fff; animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle{ 0%,100%{opacity:.2; transform:scale(.6);} 50%{opacity:1; transform:scale(1.15);} }
+  /* fish that jumps out of the river and dives back in */
+  #fish{ position:fixed; z-index:4; bottom:30%; left:46%; width:46px; opacity:0; pointer-events:none; }
+  #fish svg{ width:100%; height:auto; display:block; overflow:visible; }
+  #fish.jump{ animation: fishjump 1.6s ease-in-out; }
+  @keyframes fishjump{
+    0%   { transform: translateY(22px) rotate(-30deg); opacity:0; }
+    14%  { opacity:1; }
+    50%  { transform: translateY(-52px) rotate(14deg); opacity:1; }
+    86%  { opacity:1; }
+    100% { transform: translateY(22px) rotate(64deg); opacity:0; }
   }
   /* two clouds drifting slowly across, above the treetops */
   .cloud{
@@ -59,9 +94,10 @@
   .cloud:before, .cloud:after{ content:""; position:absolute; background:#fff; border-radius:50%; }
   .cloud:before{ width:62px; height:62px; top:-28px; left:26px; }
   .cloud:after{ width:48px; height:48px; top:-18px; left:78px; }
-  #cloud1{ top:5%;  animation: drift 78s linear infinite; }
-  #cloud2{ top:11%; transform:scale(.72); animation: drift 112s linear infinite; animation-delay:-46s; }
+  #cloud1{ top:5%;  animation: drift 78s linear infinite 0s, cloudcycle 840s linear infinite 0s; }
+  #cloud2{ top:11%; transform:scale(.72); animation: drift 112s linear infinite -46s, cloudcycle 840s linear infinite 0s; }
   @keyframes drift{ from{ left:-210px;} to{ left:112vw;} }
+  @keyframes cloudcycle{ 0%,41%{opacity:.92;} 48%,93%{opacity:0;} 99%,100%{opacity:.92;} }
 
   #ground{
     position:fixed; left:0; right:0; bottom:0; height:54%; z-index:1;
@@ -216,6 +252,12 @@
   .jtree.r{ right:-150px; }
   .jtree .owlpupils{ transform-box:fill-box; transform-origin:center; animation: look 7s ease-in-out infinite; }
   .jtree .owlmouth{ transform-box:fill-box; transform-origin:center top; transform:scaleY(.05); animation: mouth 9s ease-in-out infinite -5s; }
+  /* hanging green snake */
+  #snake{ transform-box:fill-box; transform-origin:top center; animation: snakesway 4.5s ease-in-out infinite; }
+  @keyframes snakesway{ 0%,100%{transform:rotate(-2deg);} 50%{transform:rotate(2.5deg);} }
+  .stongue{ transform-box:fill-box; transform-origin:top center; transform:scaleY(0); opacity:0; }
+  #snake.flick .stongue{ animation: flicktongue .55s ease-in-out; }
+  @keyframes flicktongue{ 0%{transform:scaleY(0);opacity:0} 30%{transform:scaleY(1);opacity:1} 70%{transform:scaleY(1);opacity:1} 100%{transform:scaleY(0);opacity:0} }
 
   /* river-swamp flowing up the hill through the middle */
   #swamp{ position:fixed; left:50%; transform:translateX(-50%); bottom:0; width:min(100vw,780px); height:54%; z-index:2; }
@@ -255,6 +297,29 @@
   #frog .eyes{ animation: look 8s ease-in-out infinite; }
   #frog .openmouth{ animation: mouth 7.5s ease-in-out infinite -2s; }
 
+  /* eagle that flies across, and a tiger that visits the river */
+  #eagle{ position:fixed; z-index:4; top:7%; left:0; width:88px; opacity:0; pointer-events:none; }
+  #eagle svg{ width:100%; height:auto; display:block; overflow:visible; }
+  #eagle.fly{ opacity:1; animation: eaglefly 7s linear; }
+  @keyframes eaglefly{ from{ transform: translateX(-160px); } to{ transform: translateX(calc(100vw + 160px)); } }
+  .ewing{ transform-box:fill-box; transform-origin:bottom left; animation: flapU .42s ease-in-out infinite; }
+  .ewing2{ transform-box:fill-box; transform-origin:top left; animation: flapD .42s ease-in-out infinite; }
+  @keyframes flapU{ 0%,100%{transform:rotate(3deg)} 50%{transform:rotate(-30deg)} }
+  @keyframes flapD{ 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(30deg)} }
+
+  #tiger{ position:fixed; z-index:4; bottom:24%; right:28%; width:132px; opacity:0; pointer-events:none; }
+  #tiger svg{ width:100%; height:auto; display:block; overflow:visible; }
+  #tiger.visiting{ opacity:1; animation: tigervisit 16s ease-in-out; }
+  #tiger.leaving .tbody{ transform: scaleX(-1); }
+  @keyframes tigervisit{
+    0%   { transform: translateX(155%); }
+    16%  { transform: translateX(0); }
+    22%  { transform: translateX(0) translateY(7px); }
+    72%  { transform: translateX(0) translateY(7px); }
+    80%  { transform: translateX(0); }
+    100% { transform: translateX(155%); }
+  }
+
   @media (prefers-reduced-motion: reduce){
     *{ animation: none !important; transition: none !important; }
   }
@@ -262,10 +327,39 @@
 </head>
 <body>
   <div id="sky"></div>
+  <div id="night"></div>
+  <div id="stars">
+    <i style="left:7%;top:9%;animation-duration:2.6s;animation-delay:-.2s"></i>
+    <i style="left:16%;top:22%;animation-duration:3.4s;animation-delay:-1.5s"></i>
+    <i style="left:24%;top:6%;animation-duration:2.1s;animation-delay:-.8s"></i>
+    <i style="left:33%;top:18%;animation-duration:4s;animation-delay:-2.6s"></i>
+    <i style="left:41%;top:8%;animation-duration:2.8s;animation-delay:-.4s"></i>
+    <i style="left:48%;top:25%;animation-duration:3.1s;animation-delay:-1.9s"></i>
+    <i style="left:55%;top:12%;animation-duration:2.4s;animation-delay:-1.1s"></i>
+    <i style="left:62%;top:4%;animation-duration:3.7s;animation-delay:-3s"></i>
+    <i style="left:69%;top:20%;animation-duration:2.2s;animation-delay:-.6s"></i>
+    <i style="left:76%;top:10%;animation-duration:3.3s;animation-delay:-2.2s"></i>
+    <i style="left:83%;top:24%;animation-duration:2.7s;animation-delay:-1.3s"></i>
+    <i style="left:90%;top:7%;animation-duration:4.1s;animation-delay:-.9s"></i>
+    <i style="left:12%;top:30%;animation-duration:3s;animation-delay:-2.8s"></i>
+    <i style="left:30%;top:32%;animation-duration:2.5s;animation-delay:-.5s"></i>
+    <i style="left:58%;top:30%;animation-duration:3.6s;animation-delay:-1.7s"></i>
+    <i style="left:86%;top:32%;animation-duration:2.9s;animation-delay:-2.4s"></i>
+  </div>
   <div id="sun"></div>
+  <div id="moon"></div>
   <div class="cloud" id="cloud1"></div>
   <div class="cloud" id="cloud2"></div>
   <div id="ground"></div>
+
+  <!-- Fish that jumps out of the river and dives back in -->
+  <div id="fish"><svg viewBox="0 0 50 34" overflow="visible">
+    <path d="M4 17 q12 -15 32 -10 q10 3 10 10 q0 7 -10 10 q-20 5 -32 -10 z" fill="#86b8e0"/>
+    <path d="M4 17 l-5 -10 l1 10 l-1 10 z" fill="#5f93bd"/>
+    <path d="M22 8 q6 -3 11 0" stroke="#5f93bd" stroke-width="2" fill="none"/>
+    <circle cx="38" cy="13" r="2.6" fill="#fff"/><circle cx="38.6" cy="13" r="1.3" fill="#111"/>
+    <path d="M30 20 q5 2 9 0" stroke="#6fa6cf" stroke-width="1.5" fill="none"/>
+  </svg></div>
 
   <!-- Tall detailed trees, trunks flush to each page edge -->
   <div class="jtree l"><svg viewBox="0 0 300 800" preserveAspectRatio="none">
@@ -285,6 +379,16 @@
     </g>
     <g fill="#256b2c" opacity=".8"><circle cx="250" cy="256" r="40"/><circle cx="188" cy="262" r="34"/></g>
     <g fill="#3a9444" opacity=".55"><circle cx="222" cy="182" r="32"/><circle cx="286" cy="218" r="24"/></g>
+    <!-- branch with a hanging green snake (opposite the owl) -->
+    <path d="M214 452 Q252 444 288 448" stroke="#5e4026" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <g id="snake">
+      <path d="M288 440 C 296 456 276 466 282 484 C 288 504 270 514 276 536 C 282 558 266 570 270 592 C 273 606 266 612 264 618" fill="none" stroke="#3aa64a" stroke-width="13" stroke-linecap="round"/>
+      <path d="M288 440 C 296 456 276 466 282 484 C 288 504 270 514 276 536" fill="none" stroke="#56c266" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+      <ellipse cx="264" cy="622" rx="13" ry="11" fill="#3aa64a"/>
+      <circle cx="258" cy="617" r="2.6" fill="#fff"/><circle cx="270" cy="617" r="2.6" fill="#fff"/>
+      <circle cx="258" cy="617" r="1.4" fill="#1c2a14"/><circle cx="270" cy="617" r="1.4" fill="#1c2a14"/>
+      <path class="stongue" d="M264 632 L264 645 M264 645 l-4 6 M264 645 l4 6" stroke="#d11e1e" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
   </svg></div>
 
   <div class="jtree r"><svg viewBox="0 0 300 800" preserveAspectRatio="none">
@@ -430,6 +534,38 @@
     </g>
     <path class="openmouth" d="M22 38 Q40 36 58 38 Q40 52 22 38 Z" fill="#c23f5a"/>
     <path d="M22 38 Q40 46 58 38" stroke="#2f7a26" stroke-width="2.5" fill="none"/>
+  </svg></div>
+
+  <!-- Eagle that flies across the sky left-to-right -->
+  <div id="eagle"><svg viewBox="0 0 110 64" overflow="visible">
+    <path d="M22 32 L4 26 L7 40 Z" fill="#5a3d22"/>
+    <ellipse cx="50" cy="32" rx="28" ry="9" fill="#6e4c2c"/>
+    <circle cx="82" cy="30" r="9" fill="#f4f1ea"/>
+    <circle cx="84" cy="28" r="2.2" fill="#fff"/><circle cx="85" cy="28" r="1.1" fill="#111"/>
+    <path d="M90 30 l12 -2 l-11 5 z" fill="#e6a91e"/>
+    <g class="ewing"><path d="M44 30 Q50 0 70 6 Q56 16 56 30 Z" fill="#5a3d22"/></g>
+    <g class="ewing2"><path d="M44 34 Q50 64 70 58 Q56 48 56 34 Z" fill="#4a3119"/></g>
+  </svg></div>
+
+  <!-- Tiger that walks out to the river, sits, and leaves -->
+  <div id="tiger"><svg class="tbody" viewBox="0 0 150 96" overflow="visible">
+    <path d="M120 56 q24 -4 18 -28" stroke="#ef9230" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <path d="M136 30 q5 -7 2 -14" stroke="#3a2a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <rect x="98" y="62" width="13" height="24" rx="5" fill="#e2841f"/>
+    <rect x="42" y="62" width="13" height="24" rx="5" fill="#e2841f"/>
+    <ellipse cx="80" cy="56" rx="46" ry="27" fill="#ef9230"/>
+    <ellipse cx="76" cy="65" rx="35" ry="16" fill="#f7dcb6"/>
+    <g stroke="#3a2a1a" stroke-width="4" fill="none" stroke-linecap="round">
+      <path d="M66 34 q2 11 0 20"/><path d="M80 32 q2 11 0 22"/><path d="M94 34 q2 11 0 20"/><path d="M106 38 q2 9 0 17"/>
+    </g>
+    <circle cx="36" cy="46" r="23" fill="#ef9230"/>
+    <circle cx="22" cy="27" r="8" fill="#ef9230"/><circle cx="50" cy="27" r="8" fill="#ef9230"/>
+    <circle cx="22" cy="27" r="3.4" fill="#3a2a1a"/><circle cx="50" cy="27" r="3.4" fill="#3a2a1a"/>
+    <ellipse cx="32" cy="50" rx="17" ry="14" fill="#f7dcb6"/>
+    <g class="eyes"><circle cx="27" cy="42" r="3.2" fill="#1a140e"/><circle cx="43" cy="42" r="3.2" fill="#1a140e"/></g>
+    <path d="M31 50 l5 0 l-2.5 3.5 z" fill="#3a2a1a"/>
+    <path d="M33.5 53 q-5 4 -9 2 M33.5 53 q5 4 9 2" stroke="#3a2a1a" stroke-width="1.6" fill="none"/>
+    <g stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"><path d="M36 25 v7"/><path d="M25 30 l3 6"/><path d="M47 30 l-3 6"/></g>
   </svg></div>
 
   <div class="stumpwrap left" id="stumpL"></div>
@@ -1008,7 +1144,29 @@ const JOKES = [
   "Owl's up all night and STILL can't spot a red Queen.",
   "Fewer teeth, more thinking, croc — give it a try.",
   "Frog, catching that fly was your best move all day.",
-  "Hippo, the diet starts tomorrow. It always starts tomorrow."
+  "Hippo, the diet starts tomorrow. It always starts tomorrow.",
+  // jabs at the tiger and the eagle
+  "An eagle just buzzed the place. Show-off with wings.",
+  "The tiger strolled up, sat by the river, and left. Big mood.",
+  "Stripes AND attitude on that tiger — still can't play a red ten.",
+  "The eagle sees everything from up there and STILL won't hint.",
+  "Here kitty kitty— nope, that's a TIGER. As you were.",
+  "The eagle does one lap and calls it a workout.",
+  "Tiger came all this way to stare at water. Deeply relatable.",
+  "Don't mind the tiger, he's only here for the scenery. Probably.",
+  "That eagle's got the best seat in the house — uses it to look smug.",
+  "The tiger sat down to plan his draw-three strategy. Good luck, stripes.",
+  // jabs at the snake hanging in the tree
+  "That snake's got no hands and STILL judges your card moves. Rude.",
+  "The snake says this game is sssspectacular.",
+  "Careful — the snake's advice is always a little forked.",
+  "The snake's been hanging around the tree all day. Literally.",
+  "Sssneaky move! The snake approves of that one.",
+  "The snake tried to deal, but kept dropping the cards. No hands, see.",
+  "That snake is all tongue and no strategy.",
+  "The snake hisses at every bad move. He's hissed a lot today.",
+  "Don't let the snake rattle you — wrong reptile, but you get it.",
+  "The snake says draw-three is his favorite. Less to hold."
 ];
 
 // shown when the player makes a strong move (card home, a reveal, or a big move)
@@ -1125,6 +1283,10 @@ function sndCheer(){ for(let k=0;k<14;k++) setTimeout(()=>noise(0.05,0.12,2000+M
 function sndMonkey(){ if(muted) return; const base=420+Math.random()*120;
   tone(base,0.12,'triangle',0.18, base*1.6); setTimeout(()=>tone(base*0.8,0.12,'triangle',0.16, base*1.3),150); }
 function sndNo(){ tone(180,0.14,'square',0.16,120); }
+function sndEagle(){ if(muted) return; tone(1500,0.16,'sawtooth',0.10,950); setTimeout(()=>tone(1150,0.16,'sawtooth',0.09,780),130); setTimeout(()=>tone(1320,0.12,'sawtooth',0.08,900),300); }
+function sndTiger(){ if(muted) return; tone(150,0.45,'sawtooth',0.16,80); noise(0.45,0.09,260,'lowpass'); }
+function sndSplash(){ if(muted) return; noise(0.16,0.12,900,'lowpass'); setTimeout(()=>noise(0.13,0.08,1500,'highpass'),110); }
+function sndSnake(){ if(muted) return; noise(0.5,0.07,3000,'highpass'); }
 
 /* ============================================================
    11. Bootstrap
@@ -1158,6 +1320,39 @@ function init(){
   function scheduleCroc(){ setTimeout(()=>{ if(!document.hidden) crocChomp(); scheduleCroc(); }, 120000 + Math.random()*60000); }
   setTimeout(crocChomp, 10000); // one early yawn so you can confirm it works
   scheduleCroc();
+
+  // eagle flies left-to-right across the sky every 3 minutes
+  function eagleFly(){ const e=document.getElementById('eagle'); if(!e) return;
+    e.classList.remove('fly'); void e.offsetWidth; e.classList.add('fly');
+    if(audioUnlocked) sndEagle();
+    setTimeout(()=>e.classList.remove('fly'), 7200); }
+  function scheduleEagle(){ setTimeout(()=>{ if(!document.hidden) eagleFly(); scheduleEagle(); }, 180000); }
+  setTimeout(eagleFly, 12000); scheduleEagle();
+
+  // tiger walks out to the river, sits, then leaves every couple of minutes (random)
+  function tigerVisit(){ const t=document.getElementById('tiger'); if(!t) return;
+    t.classList.remove('visiting','leaving'); void t.offsetWidth; t.classList.add('visiting');
+    setTimeout(()=>{ if(audioUnlocked) sndTiger(); }, 2800);   // growl on arrival
+    setTimeout(()=>t.classList.add('leaving'), 12700);          // turn to head back
+    setTimeout(()=>t.classList.remove('visiting','leaving'), 16200); }
+  function scheduleTiger(){ setTimeout(()=>{ if(!document.hidden) tigerVisit(); scheduleTiger(); }, 120000 + Math.random()*60000); }
+  setTimeout(tigerVisit, 20000); scheduleTiger();
+
+  // a fish jumps out of the river and dives back in, now and then
+  function fishJump(){ const f=document.getElementById('fish'); if(!f) return;
+    f.classList.remove('jump'); void f.offsetWidth; f.classList.add('jump');
+    if(audioUnlocked) sndSplash();
+    setTimeout(()=>f.classList.remove('jump'), 1700); }
+  function scheduleFish(){ setTimeout(()=>{ if(!document.hidden) fishJump(); scheduleFish(); }, 16000 + Math.random()*20000); }
+  setTimeout(fishJump, 8000); scheduleFish();
+
+  // the snake flicks its tongue and hisses at random
+  function snakeHiss(){ const s=document.getElementById('snake'); if(!s) return;
+    s.classList.remove('flick'); s.getBoundingClientRect(); s.classList.add('flick');
+    if(audioUnlocked) sndSnake();
+    setTimeout(()=>s.classList.remove('flick'), 650); }
+  function scheduleSnake(){ setTimeout(()=>{ if(!document.hidden) snakeHiss(); scheduleSnake(); }, 8000 + Math.random()*14000); }
+  setTimeout(snakeHiss, 7000); scheduleSnake();
 
   // dev helper: win-rate sampling (run __test(200) in console)
   window.__test = (n=200)=>{
