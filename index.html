@@ -252,9 +252,7 @@
   .jtree.r{ right:-150px; }
   .jtree .owlpupils{ transform-box:fill-box; transform-origin:center; animation: look 7s ease-in-out infinite; }
   .jtree .owlmouth{ transform-box:fill-box; transform-origin:center top; transform:scaleY(.05); animation: mouth 9s ease-in-out infinite -5s; }
-  /* hanging green snake */
-  #snake{ transform-box:fill-box; transform-origin:top center; animation: snakesway 4.5s ease-in-out infinite; }
-  @keyframes snakesway{ 0%,100%{transform:rotate(-2deg);} 50%{transform:rotate(2.5deg);} }
+  /* hanging green snake (stays still — just hisses) */
   .stongue{ transform-box:fill-box; transform-origin:top center; transform:scaleY(0); opacity:0; }
   #snake.flick .stongue{ animation: flicktongue .55s ease-in-out; }
   @keyframes flicktongue{ 0%{transform:scaleY(0);opacity:0} 30%{transform:scaleY(1);opacity:1} 70%{transform:scaleY(1);opacity:1} 100%{transform:scaleY(0);opacity:0} }
@@ -320,6 +318,26 @@
     100% { transform: translateX(155%); }
   }
 
+  /* day -> night animal swaps: cross-fade, staggered so they change one-by-one */
+  .dayonly{ opacity:1; transition: opacity 1s ease 1.2s; }
+  body.night .dayonly{ opacity:0; transition-delay:0s; }
+  .nightonly{ opacity:0; transition: opacity 1s ease 0s; }
+  body.night .nightonly{ opacity:1; transition-delay:1.2s; }
+
+  /* bat = night-time flyer (reuses the eagle's flight path) */
+  #bat{ position:fixed; z-index:4; top:8%; left:0; width:76px; opacity:0; pointer-events:none; }
+  #bat svg{ width:100%; height:auto; display:block; overflow:visible; }
+  #bat.fly{ opacity:1; animation: eaglefly 7s linear; }
+  .bwing{ transform-box:fill-box; transform-origin:100% 50%; animation: bflap .3s ease-in-out infinite; }
+  .bwing2{ transform-box:fill-box; transform-origin:0% 50%; animation: bflap .3s ease-in-out infinite; }
+  @keyframes bflap{ 0%,100%{transform:rotate(10deg)} 50%{transform:rotate(-16deg)} }
+
+  /* wolf = night-time river visitor (reuses the tiger walk/sit animation) */
+  #wolf{ position:fixed; z-index:4; bottom:24%; right:28%; width:132px; opacity:0; pointer-events:none; }
+  #wolf svg{ width:100%; height:auto; display:block; overflow:visible; }
+  #wolf.visiting{ opacity:1; animation: tigervisit 16s ease-in-out; }
+  #wolf.leaving .tbody{ transform: scaleX(-1); }
+
   @media (prefers-reduced-motion: reduce){
     *{ animation: none !important; transition: none !important; }
   }
@@ -354,11 +372,15 @@
 
   <!-- Fish that jumps out of the river and dives back in -->
   <div id="fish"><svg viewBox="0 0 50 34" overflow="visible">
-    <path d="M4 17 q12 -15 32 -10 q10 3 10 10 q0 7 -10 10 q-20 5 -32 -10 z" fill="#86b8e0"/>
-    <path d="M4 17 l-5 -10 l1 10 l-1 10 z" fill="#5f93bd"/>
-    <path d="M22 8 q6 -3 11 0" stroke="#5f93bd" stroke-width="2" fill="none"/>
-    <circle cx="38" cy="13" r="2.6" fill="#fff"/><circle cx="38.6" cy="13" r="1.3" fill="#111"/>
-    <path d="M30 20 q5 2 9 0" stroke="#6fa6cf" stroke-width="1.5" fill="none"/>
+    <path d="M4 17 q12 -15 32 -10 q10 3 10 10 q0 7 -10 10 q-20 5 -32 -10 z" fill="#5b656d"/>
+    <path d="M8 19 q12 5 26 4 q0 3 0 4 q-16 3 -26 -4 z" fill="#828c94" opacity=".6"/>
+    <path d="M4 17 l-6 -10 l1 10 l-1 10 z" fill="#434b51"/>
+    <path d="M22 8 q6 -3 11 0" stroke="#434b51" stroke-width="2" fill="none"/>
+    <path d="M30 20 q5 2 9 0" stroke="#434b51" stroke-width="1.6" fill="none"/>
+    <!-- gills -->
+    <path d="M33 9 q-3 8 0 16" stroke="#2f363b" stroke-width="1.8" fill="none"/>
+    <path d="M30 11 q-2 6 0 12" stroke="#2f363b" stroke-width="1.3" fill="none" opacity=".7"/>
+    <circle cx="40" cy="13" r="2.6" fill="#fff"/><circle cx="40.6" cy="13" r="1.3" fill="#111"/>
   </svg></div>
 
   <!-- Tall detailed trees, trunks flush to each page edge -->
@@ -379,15 +401,15 @@
     </g>
     <g fill="#256b2c" opacity=".8"><circle cx="250" cy="256" r="40"/><circle cx="188" cy="262" r="34"/></g>
     <g fill="#3a9444" opacity=".55"><circle cx="222" cy="182" r="32"/><circle cx="286" cy="218" r="24"/></g>
-    <!-- branch with a hanging green snake (opposite the owl) -->
-    <path d="M214 452 Q252 444 288 448" stroke="#5e4026" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <!-- extended branch; the snake hangs from the middle of it (opposite the owl) -->
+    <path d="M210 452 Q256 442 300 452" stroke="#5e4026" stroke-width="12" fill="none" stroke-linecap="round"/>
     <g id="snake">
-      <path d="M288 440 C 296 456 276 466 282 484 C 288 504 270 514 276 536 C 282 558 266 570 270 592 C 273 606 266 612 264 618" fill="none" stroke="#3aa64a" stroke-width="13" stroke-linecap="round"/>
-      <path d="M288 440 C 296 456 276 466 282 484 C 288 504 270 514 276 536" fill="none" stroke="#56c266" stroke-width="5" stroke-linecap="round" opacity=".7"/>
-      <ellipse cx="264" cy="622" rx="13" ry="11" fill="#3aa64a"/>
-      <circle cx="258" cy="617" r="2.6" fill="#fff"/><circle cx="270" cy="617" r="2.6" fill="#fff"/>
-      <circle cx="258" cy="617" r="1.4" fill="#1c2a14"/><circle cx="270" cy="617" r="1.4" fill="#1c2a14"/>
-      <path class="stongue" d="M264 632 L264 645 M264 645 l-4 6 M264 645 l4 6" stroke="#d11e1e" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M256 440 C 264 456 244 466 250 484 C 256 504 238 514 244 536 C 250 558 234 570 238 592 C 241 606 234 612 232 618" fill="none" stroke="#3aa64a" stroke-width="13" stroke-linecap="round"/>
+      <path d="M256 440 C 264 456 244 466 250 484 C 256 504 238 514 244 536" fill="none" stroke="#56c266" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+      <ellipse cx="232" cy="622" rx="13" ry="11" fill="#3aa64a"/>
+      <circle cx="226" cy="617" r="2.6" fill="#fff"/><circle cx="238" cy="617" r="2.6" fill="#fff"/>
+      <circle cx="226" cy="617" r="1.4" fill="#1c2a14"/><circle cx="238" cy="617" r="1.4" fill="#1c2a14"/>
+      <path class="stongue" d="M232 632 L232 645 M232 645 l-4 6 M232 645 l4 6" stroke="#d11e1e" stroke-width="2" fill="none" stroke-linecap="round"/>
     </g>
   </svg></div>
 
@@ -413,8 +435,18 @@
     <ellipse cx="104" cy="452" rx="10" ry="16" fill="#281a0d"/>
     <path d="M104 470 Q70 466 34 458" stroke="#5e4026" stroke-width="11" fill="none" stroke-linecap="round"/>
     <path d="M58 462 q-6 -14 -2 -24" stroke="#5e4026" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <!-- OWL perched at the hollow -->
-    <g>
+    <!-- PARROT (day) and OWL (night) share the perch -->
+    <g class="dayonly parrot">
+      <path d="M60 452 q10 12 6 26" stroke="#2f8f3a" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="438" rx="14" ry="18" fill="#2f9e44"/>
+      <path d="M55 430 q12 7 7 23 q-9 -4 -13 -11z" fill="#1f7d34"/>
+      <circle cx="44" cy="424" r="11" fill="#e23b2e"/>
+      <path d="M50 430 a6 6 0 0 1 0 -12 z" fill="#f4c430"/>
+      <circle cx="40" cy="421" r="2.6" fill="#fff"/><circle cx="40" cy="421" r="1.3" fill="#111"/>
+      <path d="M34 423 q-9 1 -6 7 q5 1 8 -2 z" fill="#3a2a1a"/>
+      <path d="M46 456 l0 6 M52 456 l0 6" stroke="#caa23a" stroke-width="2"/>
+    </g>
+    <g class="nightonly owl">
       <path d="M37 426 l3 -12 l7 9 z" fill="#7a4e2c"/><path d="M63 426 l-3 -12 l-7 9 z" fill="#7a4e2c"/>
       <ellipse cx="50" cy="434" rx="18" ry="21" fill="#8a5a33"/>
       <ellipse cx="50" cy="438" rx="11" ry="14" fill="#c79a64"/>
@@ -434,7 +466,6 @@
     <path d="M14 400 C 30 330 16 296 46 256 C 72 222 52 188 68 156 C 82 128 64 110 70 84 C 74 58 70 26 74 0 L 98 0 C 104 36 118 64 110 92 C 102 124 150 148 144 186 C 138 224 176 260 178 300 C 180 340 186 372 188 400 Z" fill="#4aa3df" stroke="#8fcb62" stroke-width="5"/>
     <!-- pale water streaks -->
     <ellipse cx="84" cy="120" rx="12" ry="4" fill="#7cc8f0" opacity=".8"/>
-    <ellipse cx="122" cy="220" rx="17" ry="5" fill="#7cc8f0" opacity=".7"/>
     <ellipse cx="96" cy="318" rx="22" ry="6" fill="#7cc8f0" opacity=".6"/>
     <ellipse cx="142" cy="368" rx="18" ry="6" fill="#3c8fc9" opacity=".5"/>
     <!-- rock and grass tufts on the left bank -->
@@ -547,6 +578,16 @@
     <g class="ewing2"><path d="M44 34 Q50 64 70 58 Q56 48 56 34 Z" fill="#4a3119"/></g>
   </svg></div>
 
+  <!-- Bat that flies across the night sky -->
+  <div id="bat"><svg viewBox="0 0 90 50" overflow="visible">
+    <circle cx="45" cy="16" r="7" fill="#2b2433"/>
+    <path d="M40 11 l-4 -8 l8 4 z" fill="#2b2433"/><path d="M50 11 l4 -8 l-8 4 z" fill="#2b2433"/>
+    <ellipse cx="45" cy="28" rx="9" ry="12" fill="#2b2433"/>
+    <circle cx="42" cy="15" r="1.5" fill="#ffd23f"/><circle cx="48" cy="15" r="1.5" fill="#ffd23f"/>
+    <g class="bwing"><path d="M40 24 Q14 8 2 26 Q16 26 20 34 Q12 30 40 33 Z" fill="#37304a"/></g>
+    <g class="bwing2"><path d="M50 24 Q76 8 88 26 Q74 26 70 34 Q78 30 50 33 Z" fill="#37304a"/></g>
+  </svg></div>
+
   <!-- Tiger that walks out to the river, sits, and leaves -->
   <div id="tiger"><svg class="tbody" viewBox="0 0 150 96" overflow="visible">
     <path d="M120 56 q24 -4 18 -28" stroke="#ef9230" stroke-width="9" fill="none" stroke-linecap="round"/>
@@ -566,6 +607,20 @@
     <path d="M31 50 l5 0 l-2.5 3.5 z" fill="#3a2a1a"/>
     <path d="M33.5 53 q-5 4 -9 2 M33.5 53 q5 4 9 2" stroke="#3a2a1a" stroke-width="1.6" fill="none"/>
     <g stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"><path d="M36 25 v7"/><path d="M25 30 l3 6"/><path d="M47 30 l-3 6"/></g>
+  </svg></div>
+
+  <!-- Howling wolf that visits the river at night -->
+  <div id="wolf"><svg class="tbody" viewBox="0 0 150 96" overflow="visible">
+    <path d="M118 56 q28 -2 26 -26 q-2 -10 -12 -12" stroke="#737a82" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <rect x="96" y="64" width="12" height="22" rx="5" fill="#6a7178"/>
+    <rect x="46" y="64" width="12" height="22" rx="5" fill="#6a7178"/>
+    <ellipse cx="80" cy="56" rx="44" ry="24" fill="#7e858c"/>
+    <ellipse cx="78" cy="65" rx="33" ry="13" fill="#9aa0a6"/>
+    <circle cx="44" cy="40" r="18" fill="#7e858c"/>
+    <path d="M40 24 l-4 -13 l10 7 z" fill="#6a7178"/><path d="M56 24 l4 -13 l-10 7 z" fill="#6a7178"/>
+    <path d="M30 30 Q20 22 13 13" stroke="#9aa0a6" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <circle cx="13" cy="13" r="3" fill="#2a2a2e"/>
+    <g class="eyes"><circle cx="46" cy="36" r="2.6" fill="#1a140e"/></g>
   </svg></div>
 
   <div class="stumpwrap left" id="stumpL"></div>
@@ -1166,7 +1221,20 @@ const JOKES = [
   "That snake is all tongue and no strategy.",
   "The snake hisses at every bad move. He's hissed a lot today.",
   "Don't let the snake rattle you — wrong reptile, but you get it.",
-  "The snake says draw-three is his favorite. Less to hold."
+  "The snake says draw-three is his favorite. Less to hold.",
+  // jabs at the parrot, bat, wolf and fish
+  "The parrot repeats every move I call. Polly wanna strategy?",
+  "That parrot's got more colors than the whole deck and less sense.",
+  "Parrot says 'nice move' to everyone — even the bad ones.",
+  "A bat flew by upside down. Bold way to read the cards.",
+  "The bat plays by echolocation and STILL can't find a red Queen.",
+  "Night flyer's here — the bat thinks every black card's a buddy.",
+  "The wolf howls at the moon AND at every bad shuffle.",
+  "Lone wolf? More like lone last-place. No offense, buddy.",
+  "The wolf came to howl, not to help. Typical.",
+  "A fish jumped out just to judge that move. Splash of shade.",
+  "That fish has gills and STILL can't hold a hand of cards.",
+  "The fish flops more than your losing streak. Kidding! Mostly."
 ];
 
 // shown when the player makes a strong move (card home, a reveal, or a big move)
@@ -1287,6 +1355,9 @@ function sndEagle(){ if(muted) return; tone(1500,0.16,'sawtooth',0.10,950); setT
 function sndTiger(){ if(muted) return; tone(150,0.45,'sawtooth',0.16,80); noise(0.45,0.09,260,'lowpass'); }
 function sndSplash(){ if(muted) return; noise(0.16,0.12,900,'lowpass'); setTimeout(()=>noise(0.13,0.08,1500,'highpass'),110); }
 function sndSnake(){ if(muted) return; noise(0.5,0.07,3000,'highpass'); }
+function sndOwl(){ if(muted) return; tone(420,0.18,'sine',0.14,360); setTimeout(()=>tone(380,0.22,'sine',0.13,320),260); }
+function sndBat(){ if(muted) return; tone(2600,0.05,'square',0.05,3200); setTimeout(()=>tone(2400,0.05,'square',0.05,3000),70); }
+function sndWolf(){ if(muted) return; tone(300,0.55,'sine',0.16,520); setTimeout(()=>tone(540,0.7,'sine',0.16,300),320); }
 
 /* ============================================================
    11. Bootstrap
@@ -1321,22 +1392,29 @@ function init(){
   setTimeout(crocChomp, 10000); // one early yawn so you can confirm it works
   scheduleCroc();
 
-  // eagle flies left-to-right across the sky every 3 minutes
-  function eagleFly(){ const e=document.getElementById('eagle'); if(!e) return;
-    e.classList.remove('fly'); void e.offsetWidth; e.classList.add('fly');
-    if(audioUnlocked) sndEagle();
-    setTimeout(()=>e.classList.remove('fly'), 7200); }
-  function scheduleEagle(){ setTimeout(()=>{ if(!document.hidden) eagleFly(); scheduleEagle(); }, 180000); }
-  setTimeout(eagleFly, 12000); scheduleEagle();
+  // ---- day / night state: swaps the cast to match the sky (aligned to the 840s cycle) ----
+  const DN0 = Date.now(); let isNight = false;
+  function applyPhase(n){ if(n===isNight) return; isNight=n; document.body.classList.toggle('night', n);
+    if(audioUnlocked){ if(n) sndOwl(); } }
+  function checkPhase(){ const p=((Date.now()-DN0)/1000)%840; applyPhase(p>=372 && p<800); }
+  setInterval(checkPhase, 5000); checkPhase();
 
-  // tiger walks out to the river, sits, then leaves every couple of minutes (random)
-  function tigerVisit(){ const t=document.getElementById('tiger'); if(!t) return;
+  // flyer: eagle by day, bat by night — crosses the sky every 3 minutes
+  function flyerGo(){ const e=document.getElementById(isNight?'bat':'eagle'); if(!e) return;
+    e.classList.remove('fly'); void e.offsetWidth; e.classList.add('fly');
+    if(audioUnlocked){ isNight?sndBat():sndEagle(); }
+    setTimeout(()=>e.classList.remove('fly'), 7200); }
+  function scheduleFlyer(){ setTimeout(()=>{ if(!document.hidden) flyerGo(); scheduleFlyer(); }, 180000); }
+  setTimeout(flyerGo, 12000); scheduleFlyer();
+
+  // visitor: tiger by day, howling wolf by night — comes to the river, sits, then leaves
+  function visitorGo(){ const t=document.getElementById(isNight?'wolf':'tiger'); if(!t) return;
     t.classList.remove('visiting','leaving'); void t.offsetWidth; t.classList.add('visiting');
-    setTimeout(()=>{ if(audioUnlocked) sndTiger(); }, 2800);   // growl on arrival
-    setTimeout(()=>t.classList.add('leaving'), 12700);          // turn to head back
+    setTimeout(()=>{ if(audioUnlocked){ isNight?sndWolf():sndTiger(); } }, 2800);
+    setTimeout(()=>t.classList.add('leaving'), 12700);
     setTimeout(()=>t.classList.remove('visiting','leaving'), 16200); }
-  function scheduleTiger(){ setTimeout(()=>{ if(!document.hidden) tigerVisit(); scheduleTiger(); }, 120000 + Math.random()*60000); }
-  setTimeout(tigerVisit, 20000); scheduleTiger();
+  function scheduleVisitor(){ setTimeout(()=>{ if(!document.hidden) visitorGo(); scheduleVisitor(); }, 120000 + Math.random()*60000); }
+  setTimeout(visitorGo, 20000); scheduleVisitor();
 
   // a fish jumps out of the river and dives back in, now and then
   function fishJump(){ const f=document.getElementById('fish'); if(!f) return;
