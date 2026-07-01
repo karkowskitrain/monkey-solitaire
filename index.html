@@ -253,8 +253,10 @@
   .jtree .owlpupils{ transform-box:fill-box; transform-origin:center; animation: look 7s ease-in-out infinite; }
   .jtree .owlmouth{ transform-box:fill-box; transform-origin:center top; transform:scaleY(.05); animation: mouth 9s ease-in-out infinite -5s; }
   /* snake (day) and possum (night) hang from the branch and sway; snake also hisses */
-  #snake, #possum{ transform-box:fill-box; transform-origin:top center; animation: snakesway 4.5s ease-in-out infinite; }
-  @keyframes snakesway{ 0%{transform:rotate(-6deg);} 50%{transform:rotate(6deg);} 100%{transform:rotate(-6deg);} }
+  /* pivot at the branch attachment so they swing evenly both ways */
+  #snake{ transform-box:fill-box; transform-origin:79% 0%; animation: snakesway 5s ease-in-out infinite; }
+  #possum{ transform-box:fill-box; transform-origin:48% 0%; animation: snakesway 5s ease-in-out infinite; }
+  @keyframes snakesway{ 0%{transform:rotate(0)} 25%{transform:rotate(7deg)} 50%{transform:rotate(0)} 75%{transform:rotate(-7deg)} 100%{transform:rotate(0)} }
   .stongue{ transform-box:fill-box; transform-origin:top center; transform:scaleY(0); opacity:0; }
   #snake.flick .stongue{ animation: flicktongue .55s ease-in-out; }
   @keyframes flicktongue{ 0%{transform:scaleY(0);opacity:0} 30%{transform:scaleY(1);opacity:1} 70%{transform:scaleY(1);opacity:1} 100%{transform:scaleY(0);opacity:0} }
@@ -334,15 +336,17 @@
 
   #tiger{ position:fixed; z-index:4; bottom:45%; right:26%; width:66px; opacity:0; pointer-events:none; }
   #tiger svg{ width:100%; height:auto; display:block; overflow:visible; }
-  #tiger.visiting{ opacity:1; animation: tigervisit 16s ease-in-out; }
+  #tiger.visiting{ opacity:1; animation: tigervisit 16s ease-in-out forwards; }
   #tiger.leaving .tbody{ transform: scaleX(-1); }
   @keyframes tigervisit{
-    0%   { transform: translateX(155%); }
-    16%  { transform: translateX(0); }
-    22%  { transform: translateX(0) translateY(7px); }
-    72%  { transform: translateX(0) translateY(7px); }
-    80%  { transform: translateX(0); }
-    100% { transform: translateX(155%); }
+    0%   { transform: translateX(190%);  opacity:1; }
+    20%  { transform: translateX(-100%); opacity:1; }              /* runs in to the middle */
+    26%  { transform: translateX(-100%) translateY(7px); }          /* sits down */
+    70%  { transform: translateX(-100%) translateY(7px); }
+    78%  { transform: translateX(-100%); }                          /* stands up */
+    90%  { transform: translateX(55%);   opacity:1; }               /* heads back toward the tree */
+    95%  { transform: translateX(110%);  opacity:0; }               /* vanishes behind the tree */
+    100% { transform: translateX(190%);  opacity:0; }
   }
 
   /* day -> night animal swaps: cross-fade, staggered so they change one-by-one */
@@ -362,7 +366,7 @@
   /* wolf = night-time river visitor (reuses the tiger walk/sit animation) */
   #wolf{ position:fixed; z-index:4; bottom:45%; right:26%; width:66px; opacity:0; pointer-events:none; }
   #wolf svg{ width:100%; height:auto; display:block; overflow:visible; }
-  #wolf.visiting{ opacity:1; animation: tigervisit 16s ease-in-out; }
+  #wolf.visiting{ opacity:1; animation: tigervisit 16s ease-in-out forwards; }
   #wolf.leaving .tbody{ transform: scaleX(-1); }
 
   @media (prefers-reduced-motion: reduce){
