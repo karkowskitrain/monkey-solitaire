@@ -254,7 +254,7 @@
   .jtree .owlmouth{ transform-box:fill-box; transform-origin:center top; transform:scaleY(.05); animation: mouth 9s ease-in-out infinite -5s; }
   /* snake (day) and possum (night) hang from the branch and sway; snake also hisses */
   #snake, #possum{ transform-box:fill-box; transform-origin:top center; animation: snakesway 4.5s ease-in-out infinite; }
-  @keyframes snakesway{ 0%,100%{transform:rotate(-2deg);} 50%{transform:rotate(2.5deg);} }
+  @keyframes snakesway{ 0%{transform:rotate(-6deg);} 50%{transform:rotate(6deg);} 100%{transform:rotate(-6deg);} }
   .stongue{ transform-box:fill-box; transform-origin:top center; transform:scaleY(0); opacity:0; }
   #snake.flick .stongue{ animation: flicktongue .55s ease-in-out; }
   @keyframes flicktongue{ 0%{transform:scaleY(0);opacity:0} 30%{transform:scaleY(1);opacity:1} 70%{transform:scaleY(1);opacity:1} 100%{transform:scaleY(0);opacity:0} }
@@ -307,7 +307,7 @@
   @keyframes flapU{ 0%,100%{transform:rotate(3deg)} 50%{transform:rotate(-30deg)} }
   @keyframes flapD{ 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(30deg)} }
 
-  #tiger{ position:fixed; z-index:4; bottom:24%; right:28%; width:132px; opacity:0; pointer-events:none; }
+  #tiger{ position:fixed; z-index:4; bottom:38%; right:30%; width:66px; opacity:0; pointer-events:none; }
   #tiger svg{ width:100%; height:auto; display:block; overflow:visible; }
   #tiger.visiting{ opacity:1; animation: tigervisit 16s ease-in-out; }
   #tiger.leaving .tbody{ transform: scaleX(-1); }
@@ -335,7 +335,7 @@
   @keyframes bflap{ 0%,100%{transform:rotate(10deg)} 50%{transform:rotate(-16deg)} }
 
   /* wolf = night-time river visitor (reuses the tiger walk/sit animation) */
-  #wolf{ position:fixed; z-index:4; bottom:24%; right:28%; width:132px; opacity:0; pointer-events:none; }
+  #wolf{ position:fixed; z-index:4; bottom:38%; right:30%; width:66px; opacity:0; pointer-events:none; }
   #wolf svg{ width:100%; height:auto; display:block; overflow:visible; }
   #wolf.visiting{ opacity:1; animation: tigervisit 16s ease-in-out; }
   #wolf.leaving .tbody{ transform: scaleX(-1); }
@@ -427,22 +427,22 @@
       <circle cx="249" cy="566" r="2.6" fill="#111"/><circle cx="263" cy="566" r="2.6" fill="#111"/>
       <circle cx="256" cy="598" r="4" fill="#e0a6b4"/>
     </g>
-    <!-- SPIDER WEB strung in the trunk/branch corner at night -->
+    <!-- SPIDER WEB nestled in the trunk/branch fork at night -->
     <g class="nightonly web">
       <g stroke="#cfd6da" stroke-width="1.2" fill="none" opacity=".8">
-        <path d="M196 536 L212 456"/><path d="M196 536 L232 468"/><path d="M196 536 L172 486"/>
-        <path d="M196 536 L170 536"/><path d="M196 536 L178 582"/><path d="M196 536 L212 588"/><path d="M196 536 L236 556"/>
-        <path d="M198 500 L222 500 L230 520 L224 546 L206 560 L184 552 L176 528 L182 506 Z" opacity=".7"/>
-        <path d="M196 516 L214 518 L220 534 L210 548 L192 546 L186 528 Z" opacity=".7"/>
+        <path d="M192 500 L214 456"/><path d="M192 500 L238 464"/><path d="M192 500 L166 460"/>
+        <path d="M192 500 L156 498"/><path d="M192 500 L168 544"/><path d="M192 500 L204 550"/><path d="M192 500 L232 522"/>
+        <path d="M194 468 L218 474 L226 494 L220 518 L200 530 L178 522 L170 498 L176 478 Z" opacity=".7"/>
+        <path d="M192 482 L210 488 L216 502 L206 516 L188 514 L182 498 Z" opacity=".7"/>
       </g>
-      <line x1="200" y1="470" x2="200" y2="524" stroke="#cfd6da" stroke-width="1"/>
-      <ellipse cx="200" cy="532" rx="6" ry="7" fill="#26242b"/>
-      <circle cx="200" cy="524" r="3.4" fill="#26242b"/>
+      <line x1="194" y1="462" x2="194" y2="492" stroke="#cfd6da" stroke-width="1"/>
+      <ellipse cx="194" cy="500" rx="6" ry="7" fill="#26242b"/>
+      <circle cx="194" cy="492" r="3.4" fill="#26242b"/>
       <g stroke="#26242b" stroke-width="1.6" fill="none" stroke-linecap="round">
-        <path d="M196 528 q-10 -4 -14 -12"/><path d="M196 532 q-12 0 -16 8"/><path d="M196 536 q-10 4 -12 12"/>
-        <path d="M204 528 q10 -4 14 -12"/><path d="M204 532 q12 0 16 8"/><path d="M204 536 q10 4 12 12"/>
+        <path d="M190 496 q-10 -4 -14 -12"/><path d="M190 500 q-12 0 -16 8"/><path d="M190 504 q-10 4 -12 12"/>
+        <path d="M198 496 q10 -4 14 -12"/><path d="M198 500 q12 0 16 8"/><path d="M198 504 q10 4 12 12"/>
       </g>
-      <circle cx="198" cy="523" r="1" fill="#e0a6b4"/><circle cx="202" cy="523" r="1" fill="#e0a6b4"/>
+      <circle cx="192" cy="491" r="1" fill="#e0a6b4"/><circle cx="196" cy="491" r="1" fill="#e0a6b4"/>
     </g>
   </svg></div>
 
@@ -1429,7 +1429,7 @@ function init(){
   const DN0 = Date.now(); let isNight = false;
   function applyPhase(n){ if(n===isNight) return; isNight=n; document.body.classList.toggle('night', n);
     if(audioUnlocked){ if(n) sndOwl(); } }
-  function checkPhase(){ const p=((Date.now()-DN0)/1000)%840; applyPhase(p>=372 && p<800); }
+  function checkPhase(){ const p=((Date.now()-DN0)/1000)%840; applyPhase(p>=440 && p<762); }
   setInterval(checkPhase, 5000); checkPhase();
 
   // flyer: eagle by day, bat by night — crosses the sky every 3 minutes
