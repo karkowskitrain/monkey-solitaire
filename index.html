@@ -283,19 +283,31 @@
   /* crocodile upper jaw lifts open (lower jaw stays put), then closes */
   @keyframes crocopen{ 0%{transform:rotate(0)} 22%{transform:rotate(-44deg)} 76%{transform:rotate(-44deg)} 100%{transform:rotate(0)} }
 
-  /* hippo half-way up the river: grey, more adult, eyes keep looking, submerges ~every 2 min */
-  #hippo{ width:100px; bottom:34%; left:50%; transform:translateX(-50%); animation: hipposink 120s ease-in-out infinite; }
+  /* hippo half-way up the river: grey, submerges ~every 2 min by day; stays under all night */
+  #hippo{ width:100px; bottom:34%; left:50%; transform:translateX(-50%); animation: hipposink 120s ease-in-out infinite; transition: opacity 1.1s ease, transform 1.1s ease; }
   #hippo svg{ animation: water 5s ease-in-out infinite; }
   #hippo .eyes{ animation: look 11s ease-in-out infinite; }
-  /* crocodile at the bottom, facing the right-hand monkey; opens only every 2-3 min (JS) */
+  body.night #hippo{ animation:none; transform: translateX(-50%) translateY(72px); opacity:0; }
+  /* crocodile at the bottom, facing the right-hand monkey; opens only every 2-3 min by day, sleeps at night */
   #croc{ width:178px; bottom:6px; left:50%; transform:translateX(-50%); }
   #croc .upperjaw{ transform-box:fill-box; transform-origin:0% 100%; }
   #croc.chomping .upperjaw{ animation: crocopen 2.6s ease-in-out; }
   #croc .eyes{ transform-box:fill-box; transform-origin:center; animation: look 9s ease-in-out infinite; }
+  #croc .crocsleep{ opacity:0; transition: opacity .8s ease; }
+  body.night #croc .eyes{ opacity:0; }
+  body.night #croc .crocsleep{ opacity:1; }
+  #croc .zzz text{ opacity:0; transform-box:fill-box; }
+  body.night #croc .zzz .z1{ animation: zfloat 3s ease-in-out infinite; }
+  body.night #croc .zzz .z2{ animation: zfloat 3s ease-in-out infinite .9s; }
+  body.night #croc .zzz .z3{ animation: zfloat 3s ease-in-out infinite 1.8s; }
+  @keyframes zfloat{ 0%{opacity:0; transform:translateY(0)} 20%{opacity:.95} 100%{opacity:0; transform:translateY(-24px)} }
   /* frog off on the side of the swamp, away from the others */
   #frog{ width:54px; bottom:21%; left:57%; }
   #frog .eyes{ animation: look 8s ease-in-out infinite; }
   #frog .openmouth{ animation: mouth 7.5s ease-in-out infinite -2s; }
+  /* turtle basks by day where the frog sits by night */
+  #turtle{ width:66px; bottom:19%; left:55%; }
+  #turtle .eyes{ animation: look 9s ease-in-out infinite; }
 
   /* eagle that flies across, and a tiger that visits the river */
   #eagle{ position:fixed; z-index:4; top:7%; left:0; width:88px; opacity:0; pointer-events:none; }
@@ -307,7 +319,7 @@
   @keyframes flapU{ 0%,100%{transform:rotate(3deg)} 50%{transform:rotate(-30deg)} }
   @keyframes flapD{ 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(30deg)} }
 
-  #tiger{ position:fixed; z-index:4; bottom:38%; right:30%; width:66px; opacity:0; pointer-events:none; }
+  #tiger{ position:fixed; z-index:4; bottom:43%; right:26%; width:66px; opacity:0; pointer-events:none; }
   #tiger svg{ width:100%; height:auto; display:block; overflow:visible; }
   #tiger.visiting{ opacity:1; animation: tigervisit 16s ease-in-out; }
   #tiger.leaving .tbody{ transform: scaleX(-1); }
@@ -335,7 +347,7 @@
   @keyframes bflap{ 0%,100%{transform:rotate(10deg)} 50%{transform:rotate(-16deg)} }
 
   /* wolf = night-time river visitor (reuses the tiger walk/sit animation) */
-  #wolf{ position:fixed; z-index:4; bottom:38%; right:30%; width:66px; opacity:0; pointer-events:none; }
+  #wolf{ position:fixed; z-index:4; bottom:43%; right:26%; width:66px; opacity:0; pointer-events:none; }
   #wolf svg{ width:100%; height:auto; display:block; overflow:visible; }
   #wolf.visiting{ opacity:1; animation: tigervisit 16s ease-in-out; }
   #wolf.leaving .tbody{ transform: scaleX(-1); }
@@ -427,23 +439,6 @@
       <circle cx="249" cy="566" r="2.6" fill="#111"/><circle cx="263" cy="566" r="2.6" fill="#111"/>
       <circle cx="256" cy="598" r="4" fill="#e0a6b4"/>
     </g>
-    <!-- SPIDER WEB nestled in the trunk/branch fork at night -->
-    <g class="nightonly web">
-      <g stroke="#cfd6da" stroke-width="1.2" fill="none" opacity=".8">
-        <path d="M192 500 L214 456"/><path d="M192 500 L238 464"/><path d="M192 500 L166 460"/>
-        <path d="M192 500 L156 498"/><path d="M192 500 L168 544"/><path d="M192 500 L204 550"/><path d="M192 500 L232 522"/>
-        <path d="M194 468 L218 474 L226 494 L220 518 L200 530 L178 522 L170 498 L176 478 Z" opacity=".7"/>
-        <path d="M192 482 L210 488 L216 502 L206 516 L188 514 L182 498 Z" opacity=".7"/>
-      </g>
-      <line x1="194" y1="462" x2="194" y2="492" stroke="#cfd6da" stroke-width="1"/>
-      <ellipse cx="194" cy="500" rx="6" ry="7" fill="#26242b"/>
-      <circle cx="194" cy="492" r="3.4" fill="#26242b"/>
-      <g stroke="#26242b" stroke-width="1.6" fill="none" stroke-linecap="round">
-        <path d="M190 496 q-10 -4 -14 -12"/><path d="M190 500 q-12 0 -16 8"/><path d="M190 504 q-10 4 -12 12"/>
-        <path d="M198 496 q10 -4 14 -12"/><path d="M198 500 q12 0 16 8"/><path d="M198 504 q10 4 12 12"/>
-      </g>
-      <circle cx="192" cy="491" r="1" fill="#e0a6b4"/><circle cx="196" cy="491" r="1" fill="#e0a6b4"/>
-    </g>
   </svg></div>
 
   <div class="jtree r"><svg viewBox="0 0 300 800" preserveAspectRatio="none">
@@ -489,6 +484,23 @@
       <path d="M47 432 L53 432 L50 438 Z" fill="#e08a2a"/>
       <path class="owlmouth" d="M47.5 438 L52.5 438 L50 444 Z" fill="#a85610"/>
       <path d="M44 453 l0 6 M50 453 l0 6 M56 453 l0 6" stroke="#e08a2a" stroke-width="2"/>
+    </g>
+    <!-- SPIDER WEB in this tree's fork at night -->
+    <g class="nightonly web">
+      <g stroke="#cfd6da" stroke-width="1.2" fill="none" opacity=".8">
+        <path d="M108 508 L88 466"/><path d="M108 508 L128 470"/><path d="M108 508 L140 486"/>
+        <path d="M108 508 L146 508"/><path d="M108 508 L136 552"/><path d="M108 508 L104 556"/><path d="M108 508 L76 530"/>
+        <path d="M106 478 L130 484 L138 506 L130 530 L110 540 L88 530 L82 504 L90 484 Z" opacity=".7"/>
+        <path d="M108 492 L126 498 L132 512 L122 526 L104 524 L98 508 Z" opacity=".7"/>
+      </g>
+      <line x1="110" y1="470" x2="110" y2="500" stroke="#cfd6da" stroke-width="1"/>
+      <ellipse cx="110" cy="508" rx="6" ry="7" fill="#26242b"/>
+      <circle cx="110" cy="500" r="3.4" fill="#26242b"/>
+      <g stroke="#26242b" stroke-width="1.6" fill="none" stroke-linecap="round">
+        <path d="M106 504 q-10 -4 -14 -12"/><path d="M106 508 q-12 0 -16 8"/><path d="M106 512 q-10 4 -12 12"/>
+        <path d="M114 504 q10 -4 14 -12"/><path d="M114 508 q12 0 16 8"/><path d="M114 512 q10 4 12 12"/>
+      </g>
+      <circle cx="108" cy="499" r="1" fill="#e0a6b4"/><circle cx="112" cy="499" r="1" fill="#e0a6b4"/>
     </g>
   </svg></div>
 
@@ -581,11 +593,21 @@
         <circle cx="104" cy="38" r="9.5" fill="#fff"/><circle cx="130" cy="38" r="9.5" fill="#fff"/>
         <circle cx="106" cy="40" r="4.6" fill="#1a2a12"/><circle cx="132" cy="40" r="4.6" fill="#1a2a12"/>
       </g>
+      <g class="crocsleep">
+        <circle cx="104" cy="40" r="14" fill="#6aa84f"/><circle cx="130" cy="40" r="14" fill="#6aa84f"/>
+        <path d="M96 41 q8 6 16 0" stroke="#20340f" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <path d="M122 41 q8 6 16 0" stroke="#20340f" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      </g>
+    </g>
+    <g class="zzz" fill="#eaf2ff" font-family="Arial, sans-serif" font-weight="bold">
+      <text class="z1" x="176" y="34" font-size="13">z</text>
+      <text class="z2" x="186" y="26" font-size="17">z</text>
+      <text class="z3" x="198" y="16" font-size="21">z</text>
     </g>
   </svg></div>
 
-  <!-- Frog on a lily pad off to the side of the swamp -->
-  <div class="animal" id="frog"><svg viewBox="0 0 80 72" overflow="visible">
+  <!-- Frog on a lily pad (night); a turtle basks here by day -->
+  <div class="animal nightonly" id="frog"><svg viewBox="0 0 80 72" overflow="visible">
     <ellipse cx="40" cy="62" rx="36" ry="9" fill="#3f9b54"/>
     <path d="M40 62 L52 55" stroke="#2f7a3f" stroke-width="2"/>
     <ellipse cx="40" cy="48" rx="28" ry="13" fill="#4aa83c"/>
@@ -598,6 +620,21 @@
     </g>
     <path class="openmouth" d="M22 38 Q40 36 58 38 Q40 52 22 38 Z" fill="#c23f5a"/>
     <path d="M22 38 Q40 46 58 38" stroke="#2f7a26" stroke-width="2.5" fill="none"/>
+  </svg></div>
+
+  <!-- Turtle basking by day (replaced by the frog at night) -->
+  <div class="animal dayonly" id="turtle"><svg viewBox="0 0 90 60" overflow="visible">
+    <ellipse cx="45" cy="53" rx="40" ry="8" fill="#3f9b54"/>
+    <ellipse cx="66" cy="46" rx="8" ry="5" fill="#5aa84a"/>
+    <path d="M18 46 Q22 20 45 18 Q68 20 72 46 Z" fill="#5e8f3e"/>
+    <path d="M20 46 Q45 54 70 46 Z" fill="#7bb356"/>
+    <g stroke="#456b2c" stroke-width="1.6" fill="none">
+      <path d="M45 20 V46"/><path d="M31 26 L34 46"/><path d="M59 26 L56 46"/><path d="M24 36 H66"/>
+    </g>
+    <ellipse cx="24" cy="47" rx="8" ry="5" fill="#5aa84a"/>
+    <circle cx="12" cy="38" r="8" fill="#5aa84a"/>
+    <g class="eyes"><circle cx="9" cy="36" r="1.6" fill="#111"/></g>
+    <path d="M5 40 q3 2 6 0" stroke="#3f7a2e" stroke-width="1.2" fill="none"/>
   </svg></div>
 
   <!-- Eagle that flies across the sky left-to-right -->
@@ -1267,7 +1304,19 @@ const JOKES = [
   "The wolf came to howl, not to help. Typical.",
   "A fish jumped out just to judge that move. Splash of shade.",
   "That fish has gills and STILL can't hold a hand of cards.",
-  "The fish flops more than your losing streak. Kidding! Mostly."
+  "The fish flops more than your losing streak. Kidding! Mostly.",
+  // jabs at the turtle, possum, spider and the sleepy night crew
+  "The turtle's playing the long game. The VERY long game.",
+  "Slow and steady, says the turtle. Still finished last, though.",
+  "The turtle carries his own table around and STILL won't deal.",
+  "The possum plays dead every time he's about to lose. Smart, actually.",
+  "That possum hangs upside down — explains how he reads the cards.",
+  "Possum's asleep... or is he? With that one you never know.",
+  "The spider spun a whole web and STILL can't catch a break.",
+  "Eight legs, zero card sense — that's our spider.",
+  "The spider says your moves are all tangled up. Rude.",
+  "The croc's snoring again — zzz-actly no help at all.",
+  "The hippo vanished underwater for the night. Bold exit strategy."
 ];
 
 // shown when the player makes a strong move (card home, a reveal, or a big move)
@@ -1418,7 +1467,7 @@ function init(){
   window.addEventListener('orientationchange', ()=>{ setTimeout(()=>{ sizeCards(); render(); }, 250); });
 
   // crocodile opens its mouth only every 2-3 minutes, otherwise just watches
-  function crocChomp(){ const c=document.getElementById('croc'); if(!c) return;
+  function crocChomp(){ if(isNight) return; const c=document.getElementById('croc'); if(!c) return;
     c.classList.remove('chomping'); void c.offsetWidth; c.classList.add('chomping');
     setTimeout(()=>c.classList.remove('chomping'), 2800); }
   function scheduleCroc(){ setTimeout(()=>{ if(!document.hidden) crocChomp(); scheduleCroc(); }, 120000 + Math.random()*60000); }
