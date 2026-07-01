@@ -221,6 +221,16 @@
   #crowd span:nth-child(3n){ animation-delay:.3s; }
   @keyframes hop{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
 
+  /* randomized win effects (confetti / balloons / fireworks) */
+  #confetti, #balloons, #fireworks{ position:fixed; inset:0; z-index:8; pointer-events:none; overflow:hidden; }
+  #confetti i{ position:absolute; top:-8%; border-radius:1px; animation: conffall linear infinite; }
+  @keyframes conffall{ from{ transform: translateY(-10vh) rotate(0);} to{ transform: translateY(112vh) rotate(760deg);} }
+  #balloons b{ position:absolute; bottom:-70px; border-radius:50% 50% 48% 48%; box-shadow: inset -4px -5px 0 rgba(0,0,0,.08); animation: balloonrise ease-in forwards; }
+  #balloons b::after{ content:""; position:absolute; left:50%; top:98%; width:1px; height:38px; background:rgba(255,255,255,.55); }
+  @keyframes balloonrise{ from{ transform: translateY(0) translateX(0);} to{ transform: translateY(-132vh) translateX(var(--drift,0));} }
+  #fireworks span{ position:absolute; width:6px; height:6px; border-radius:50%; animation: sparkburst ease-out forwards; }
+  @keyframes sparkburst{ from{ transform: translate(0,0) scale(1); opacity:1;} to{ transform: translate(var(--dx),var(--dy)) scale(.3); opacity:0;} }
+
   #win{
     position:fixed; inset:0; z-index:7; display:none;
     align-items:center; justify-content:center; flex-direction:column;
@@ -379,16 +389,16 @@
   #wolf.visiting{ opacity:1; animation: tigervisit 16s ease-in-out forwards; }
   #wolf.leaving .tbody{ transform: scaleX(-1); }
   /* arctic cast for snowy nights */
-  #polarbear{ position:fixed; z-index:4; bottom:45%; right:26%; width:80px; opacity:0; pointer-events:none; }
-  #polarbear svg{ width:100%; height:auto; display:block; overflow:visible; }
-  #polarbear.visiting{ opacity:1; animation: tigervisit 16s ease-in-out forwards; }
-  #polarbear.leaving .tbody{ transform: scaleX(-1); }
+  #polarbear{ width:82px; bottom:32%; left:63%; }
   #walrus{ width:118px; bottom:33%; left:50%; transform:translateX(-50%); }
   #walrus .eyes{ animation: look 12s ease-in-out infinite; }
   #penguin{ width:46px; bottom:19%; left:61%; }
   #seal{ width:96px; bottom:12%; left:31%; }
   #seal .eyes{ animation: look 10s ease-in-out infinite; }
-  #moose{ width:82px; bottom:32%; left:64%; }
+  #moose{ position:fixed; z-index:4; bottom:45%; right:26%; width:74px; opacity:0; pointer-events:none; }
+  #moose svg{ width:100%; height:auto; display:block; overflow:visible; }
+  #moose.visiting{ opacity:1; animation: tigervisit 16s ease-in-out forwards; }
+  #moose.leaving .tbody{ transform: scaleX(-1); }
   #moose .eyes{ animation: look 11s ease-in-out infinite; }
   /* yeti peeks out from behind the left tree on snowy nights */
   #yeti{ position:fixed; z-index:2; bottom:30%; left:0; width:122px; opacity:0; pointer-events:none; }
@@ -764,8 +774,8 @@
     <ellipse cx="40" cy="148" rx="14" ry="7" fill="#dbe4ec"/><ellipse cx="80" cy="148" rx="14" ry="7" fill="#dbe4ec"/>
   </svg></div>
 
-  <!-- Moose standing up the hill on snowy nights -->
-  <div class="animal snowonly" id="moose"><svg viewBox="0 0 120 112" overflow="visible">
+  <!-- Moose visits the river on snowy nights (instead of the wolf/tiger) -->
+  <div id="moose"><svg class="tbody" viewBox="0 0 120 112" overflow="visible">
     <rect x="86" y="70" width="7" height="34" fill="#5a4632"/>
     <rect x="70" y="70" width="7" height="34" fill="#4d3b28"/>
     <rect x="38" y="70" width="7" height="34" fill="#5a4632"/>
@@ -852,8 +862,8 @@
     <g class="eyes"><circle cx="46" cy="36" r="2.6" fill="#1a140e"/></g>
   </svg></div>
 
-  <!-- Polar bear visits the river on snowy nights (instead of the wolf) -->
-  <div id="polarbear"><svg class="tbody" viewBox="0 0 150 96" overflow="visible">
+  <!-- Polar bear stands in the snow scene -->
+  <div class="animal snowonly" id="polarbear"><svg viewBox="0 0 150 96" overflow="visible">
     <circle cx="122" cy="58" r="6" fill="#e3e9ee"/>
     <rect x="96" y="62" width="16" height="26" rx="7" fill="#e3e9ee"/>
     <rect x="44" y="62" width="16" height="26" rx="7" fill="#e3e9ee"/>
@@ -885,6 +895,9 @@
   </div>
 
   <div id="crowd"></div>
+  <div id="confetti"></div>
+  <div id="balloons"></div>
+  <div id="fireworks"></div>
   <div id="win">
     <div class="panel">
       <h2>🎉 You Win! 🎉</h2>
@@ -1323,7 +1336,7 @@ function makeDeck(){
 function newGame(){
   busy=true; clearSel();
   document.getElementById('win').classList.remove('show');
-  document.getElementById('crowd').classList.remove('show');
+  clearCelebration();
   setMonkeyCheer(false);
   finishBtn.style.display='none';
   toast('🍌 Dealing a winnable game…');
@@ -1338,14 +1351,55 @@ function newGame(){
   }, 30);
 }
 
+const celebration = { fw:null };
+const CELCOLORS = ['#ff5f6d','#ffd23f','#4aa3df','#5ad15a','#c86bff','#ff9f43','#ff6fae'];
+function clearCelebration(){
+  if(celebration.fw){ clearInterval(celebration.fw); celebration.fw=null; }
+  ['confetti','balloons','fireworks'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=''; });
+  const crowd=document.getElementById('crowd'); if(crowd){ crowd.classList.remove('show'); crowd.innerHTML=''; }
+}
+function fwBurst(f){
+  const cx=10+Math.random()*80, cy=8+Math.random()*44, col=CELCOLORS[(Math.random()*CELCOLORS.length)|0];
+  const N=16, R=54+Math.random()*46;
+  for(let i=0;i<N;i++){ const s=document.createElement('span'); const a=(i/N)*Math.PI*2;
+    s.style.left=cx+'%'; s.style.top=cy+'%'; s.style.background=col;
+    s.style.setProperty('--dx',(Math.cos(a)*R).toFixed(0)+'px'); s.style.setProperty('--dy',(Math.sin(a)*R).toFixed(0)+'px');
+    s.style.animationDuration=(0.9+Math.random()*0.5).toFixed(2)+'s'; f.appendChild(s);
+    setTimeout(()=>s.remove(), 1600); }
+  if(audioUnlocked) sndPop();
+}
+function celebrate(kind){
+  clearCelebration();
+  if(kind==='animals'){
+    const crowd=document.getElementById('crowd');
+    const emo=['🐵','🦜','🐢','🐸','🐊','🦉','🐒','🐧','🦭','🐻‍❄️','🦌','🐟','🐰','🦊'];
+    crowd.innerHTML = emo.map(a=>`<span>${a}</span>`).join(''); crowd.classList.add('show');
+  } else if(kind==='confetti'){
+    const c=document.getElementById('confetti');
+    for(let i=0;i<90;i++){ const p=document.createElement('i');
+      p.style.left=(Math.random()*100).toFixed(1)+'%'; p.style.background=CELCOLORS[(Math.random()*CELCOLORS.length)|0];
+      p.style.width=(6+Math.random()*6).toFixed(0)+'px'; p.style.height=(10+Math.random()*8).toFixed(0)+'px';
+      p.style.opacity=(0.7+Math.random()*0.3).toFixed(2);
+      p.style.animationDuration=(2.4+Math.random()*2.6).toFixed(1)+'s'; p.style.animationDelay=(-Math.random()*3).toFixed(1)+'s';
+      c.appendChild(p); }
+  } else if(kind==='balloons'){
+    const b=document.getElementById('balloons');
+    for(let i=0;i<15;i++){ const el=document.createElement('b');
+      el.style.left=(3+Math.random()*90).toFixed(1)+'%'; el.style.background=CELCOLORS[(Math.random()*CELCOLORS.length)|0];
+      el.style.setProperty('--drift',(Math.random()*60-30).toFixed(0)+'px');
+      const w=(30+Math.random()*20); el.style.width=w.toFixed(0)+'px'; el.style.height=(w*1.28).toFixed(0)+'px';
+      el.style.animationDuration=(5+Math.random()*4).toFixed(1)+'s'; el.style.animationDelay=(-Math.random()*2.5).toFixed(1)+'s';
+      b.appendChild(el); }
+  } else { // fireworks
+    const f=document.getElementById('fireworks'); fwBurst(f); fwBurst(f);
+    let n=0; celebration.fw=setInterval(()=>{ fwBurst(f); if(++n>=12){ clearInterval(celebration.fw); celebration.fw=null; } }, 620);
+  }
+}
 function doWin(){
   busy=true; clearSel(); render();
   sndWin(); sndCheer();
-  const crowd=document.getElementById('crowd');
-  const animals=['🐵','🐰','🦊','🐶','🐸','🐱','🐷','🐒'];
-  crowd.innerHTML = animals.map(a=>`<span>${a}</span>`).join('');
-  crowd.classList.add('show');
   setMonkeyCheer(true);
+  celebrate(['confetti','balloons','fireworks','animals'][(Math.random()*4)|0]);
   setTimeout(()=>{ document.getElementById('win').classList.add('show'); busy=false; }, 700);
 }
 
@@ -1639,6 +1693,8 @@ function sndBat(){ if(muted) return; tone(2600,0.05,'square',0.05,3200); setTime
 function sndWolf(){ if(muted) return; tone(300,0.55,'sine',0.16,520); setTimeout(()=>tone(540,0.7,'sine',0.16,300),320); }
 function sndWhistle(){ if(muted) return; tone(1800,0.12,'sine',0.10,2500); setTimeout(()=>tone(2300,0.14,'sine',0.09,1600),120); }
 function sndBear(){ if(muted) return; tone(150,0.5,'sawtooth',0.18,90); noise(0.5,0.12,220,'lowpass'); }
+function sndPop(){ if(muted) return; noise(0.05,0.16,1400,'bandpass'); tone(520+Math.random()*280,0.22,'triangle',0.10,110); }
+function sndMoose(){ if(muted) return; tone(180,0.6,'sawtooth',0.16,140); setTimeout(()=>tone(150,0.5,'sawtooth',0.14,110),360); }
 
 /* ============================================================
    11. Bootstrap
@@ -1713,10 +1769,10 @@ function init(){
   setTimeout(flyerGo, 12000); scheduleFlyer();
 
   // visitor: tiger by day, howling wolf by night — comes to the river, sits, then leaves
-  function visitorGo(){ let id='tiger'; if(isNight) id = (weather==='snow') ? 'polarbear' : 'wolf';
+  function visitorGo(){ let id='tiger'; if(isNight) id = (weather==='snow') ? 'moose' : 'wolf';
     const t=document.getElementById(id); if(!t) return;
     t.classList.remove('visiting','leaving'); void t.offsetWidth; t.classList.add('visiting');
-    setTimeout(()=>{ if(audioUnlocked){ id==='wolf'?sndWolf():id==='polarbear'?sndBear():sndTiger(); } }, 2800);
+    setTimeout(()=>{ if(audioUnlocked){ id==='wolf'?sndWolf():id==='moose'?sndMoose():sndTiger(); } }, 2800);
     setTimeout(()=>t.classList.add('leaving'), 12700);
     setTimeout(()=>t.classList.remove('visiting','leaving'), 16200); }
   function scheduleVisitor(){ setTimeout(()=>{ if(!document.hidden) visitorGo(); scheduleVisitor(); }, 120000 + Math.random()*60000); }
