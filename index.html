@@ -333,6 +333,10 @@
   .ewing2{ transform-box:fill-box; transform-origin:top left; animation: flapD .42s ease-in-out infinite; }
   @keyframes flapU{ 0%,100%{transform:rotate(3deg)} 50%{transform:rotate(-30deg)} }
   @keyframes flapD{ 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(30deg)} }
+  /* snowy owl = flyer on snowy nights */
+  #snowowl{ position:fixed; z-index:4; top:9%; left:0; width:84px; opacity:0; pointer-events:none; }
+  #snowowl svg{ width:100%; height:auto; display:block; overflow:visible; }
+  #snowowl.fly{ opacity:1; animation: eaglefly 7.5s linear; }
 
   #tiger{ position:fixed; z-index:4; bottom:45%; right:26%; width:66px; opacity:0; pointer-events:none; }
   #tiger svg{ width:100%; height:auto; display:block; overflow:visible; }
@@ -354,6 +358,12 @@
   body.night .dayonly{ opacity:0; transition-delay:0s; }
   .nightonly{ opacity:0; transition: opacity 1s ease 0s; }
   body.night .nightonly{ opacity:1; transition-delay:1.2s; }
+  /* clear/rain nights only (hidden on snowy nights, where the arctic cast takes over) */
+  .wetnightonly{ opacity:0; transition: opacity 1s ease; }
+  body.night:not(.snowing) .wetnightonly{ opacity:1; transition-delay:1.2s; }
+  /* snowy night only (arctic animals) */
+  .snowonly{ opacity:0; transition: opacity 1s ease; }
+  body.night.snowing .snowonly{ opacity:1; transition-delay:1.2s; }
 
   /* bat = night-time flyer (reuses the eagle's flight path) */
   #bat{ position:fixed; z-index:4; top:8%; left:0; width:76px; opacity:0; pointer-events:none; }
@@ -368,6 +378,42 @@
   #wolf svg{ width:100%; height:auto; display:block; overflow:visible; }
   #wolf.visiting{ opacity:1; animation: tigervisit 16s ease-in-out forwards; }
   #wolf.leaving .tbody{ transform: scaleX(-1); }
+  /* arctic cast for snowy nights */
+  #polarbear{ position:fixed; z-index:4; bottom:45%; right:26%; width:80px; opacity:0; pointer-events:none; }
+  #polarbear svg{ width:100%; height:auto; display:block; overflow:visible; }
+  #polarbear.visiting{ opacity:1; animation: tigervisit 16s ease-in-out forwards; }
+  #polarbear.leaving .tbody{ transform: scaleX(-1); }
+  #walrus{ width:118px; bottom:33%; left:50%; transform:translateX(-50%); }
+  #walrus .eyes{ animation: look 12s ease-in-out infinite; }
+  #penguin{ width:46px; bottom:19%; left:61%; }
+  #seal{ width:96px; bottom:12%; left:31%; }
+  #seal .eyes{ animation: look 10s ease-in-out infinite; }
+  #moose{ width:82px; bottom:32%; left:64%; }
+  #moose .eyes{ animation: look 11s ease-in-out infinite; }
+  /* yeti peeks out from behind the left tree on snowy nights */
+  #yeti{ position:fixed; z-index:2; bottom:30%; left:0; width:122px; opacity:0; pointer-events:none; }
+  #yeti svg{ width:100%; height:auto; display:block; overflow:visible; }
+  #yeti.peek{ animation: yetipeek 9s ease-in-out; }
+  @keyframes yetipeek{
+    0%   { transform: translateX(-95%); opacity:0; }
+    16%  { transform: translateX(-16%); opacity:1; }
+    30%  { transform: translateX(-2%);  opacity:1; }
+    72%  { transform: translateX(-2%);  opacity:1; }
+    86%  { transform: translateX(-22%); opacity:1; }
+    100% { transform: translateX(-95%); opacity:0; }
+  }
+
+  /* weather overlays: snow on the 2nd night, rain on the 3rd (sunny by day) */
+  #snow, #rain{ position:fixed; inset:0; z-index:6; pointer-events:none; overflow:hidden; opacity:0; transition: opacity 1.5s ease; }
+  body.snowing #snow{ opacity:1; }
+  body.raining #rain{ opacity:1; }
+  #snow i, #rain i{ animation-play-state: paused; }
+  body.snowing #snow i{ animation-play-state: running; }
+  body.raining #rain i{ animation-play-state: running; }
+  #snow i{ position:absolute; top:-6%; border-radius:50%; background:#fff; box-shadow:0 0 3px rgba(255,255,255,.6); animation: snowfall linear infinite; }
+  @keyframes snowfall{ from{ transform: translateY(-8vh) translateX(-9px);} to{ transform: translateY(112vh) translateX(9px);} }
+  #rain i{ position:absolute; top:-8%; width:2px; background: linear-gradient(rgba(174,206,255,0), rgba(174,206,255,.75)); animation: rainfall linear infinite; }
+  @keyframes rainfall{ from{ transform: translateY(-14vh);} to{ transform: translateY(114vh);} }
 
   @media (prefers-reduced-motion: reduce){
     *{ animation: none !important; transition: none !important; }
@@ -395,6 +441,8 @@
     <i style="left:58%;top:30%;animation-duration:3.6s;animation-delay:-1.7s"></i>
     <i style="left:86%;top:32%;animation-duration:2.9s;animation-delay:-2.4s"></i>
   </div>
+  <div id="snow"></div>
+  <div id="rain"></div>
   <div id="sun"></div>
   <div id="moon"></div>
   <div class="cloud" id="cloud1"></div>
@@ -443,7 +491,7 @@
       <path class="stongue" d="M232 632 L232 645 M232 645 l-4 6 M232 645 l4 6" stroke="#d11e1e" stroke-width="2" fill="none" stroke-linecap="round"/>
     </g>
     <!-- POSSUM hangs from the branch at night (replaces the snake, also sways) -->
-    <g id="possum" class="nightonly">
+    <g id="possum" class="wetnightonly">
       <path d="M244 450 q-14 -8 -18 4 q-3 12 12 12" stroke="#b9bec3" stroke-width="7" fill="none" stroke-linecap="round"/>
       <path d="M250 452 q6 -2 6 8" stroke="#b9bec3" stroke-width="7" fill="none" stroke-linecap="round"/>
       <ellipse cx="256" cy="512" rx="21" ry="44" fill="#8f959b"/>
@@ -492,7 +540,7 @@
       <path class="pbeak" d="M33 426 q-7 2 -5 5 q4 0 7 -3 z" fill="#2a1e12"/>
       <path d="M46 456 l0 6 M52 456 l0 6" stroke="#caa23a" stroke-width="2"/>
     </g>
-    <g class="nightonly owl">
+    <g class="wetnightonly owl">
       <path d="M37 426 l3 -12 l7 9 z" fill="#7a4e2c"/><path d="M63 426 l-3 -12 l-7 9 z" fill="#7a4e2c"/>
       <ellipse cx="50" cy="434" rx="18" ry="21" fill="#8a5a33"/>
       <ellipse cx="50" cy="438" rx="11" ry="14" fill="#c79a64"/>
@@ -504,7 +552,7 @@
       <path d="M44 453 l0 6 M50 453 l0 6 M56 453 l0 6" stroke="#e08a2a" stroke-width="2"/>
     </g>
     <!-- SPIDER WEB in this tree's fork at night -->
-    <g class="nightonly web">
+    <g class="wetnightonly web">
       <g stroke="#cfd6da" stroke-width="1.2" fill="none" opacity=".8">
         <path d="M108 508 L88 466"/><path d="M108 508 L128 470"/><path d="M108 508 L140 486"/>
         <path d="M108 508 L146 508"/><path d="M108 508 L136 552"/><path d="M108 508 L104 556"/><path d="M108 508 L76 530"/>
@@ -625,7 +673,7 @@
   </svg></div>
 
   <!-- Frog on a lily pad (night); a turtle basks here by day -->
-  <div class="animal nightonly" id="frog"><svg viewBox="0 0 80 72" overflow="visible">
+  <div class="animal wetnightonly" id="frog"><svg viewBox="0 0 80 72" overflow="visible">
     <ellipse cx="40" cy="62" rx="36" ry="9" fill="#3f9b54"/>
     <path d="M40 62 L52 55" stroke="#2f7a3f" stroke-width="2"/>
     <ellipse cx="40" cy="48" rx="28" ry="13" fill="#4aa83c"/>
@@ -658,6 +706,83 @@
     </g>
   </svg></div>
 
+  <!-- Walrus in the water on snowy nights (instead of the hippo) -->
+  <div class="animal snowonly" id="walrus"><svg viewBox="0 0 140 100" overflow="visible">
+    <ellipse cx="70" cy="88" rx="60" ry="10" fill="none" stroke="#cfeafc" stroke-width="3" opacity=".7"/>
+    <ellipse cx="30" cy="82" rx="14" ry="8" fill="#9a7f6a"/><ellipse cx="110" cy="82" rx="14" ry="8" fill="#9a7f6a"/>
+    <ellipse cx="70" cy="54" rx="46" ry="34" fill="#a98a72"/>
+    <ellipse cx="70" cy="66" rx="34" ry="24" fill="#c2a389"/>
+    <g class="eyes"><circle cx="54" cy="40" r="4" fill="#2a1f16"/><circle cx="86" cy="40" r="4" fill="#2a1f16"/></g>
+    <ellipse cx="64" cy="60" rx="3" ry="4" fill="#6b5647"/><ellipse cx="76" cy="60" rx="3" ry="4" fill="#6b5647"/>
+    <path d="M62 74 q-2 18 -5 24" stroke="#f2ead6" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M78 74 q2 18 5 24" stroke="#f2ead6" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <g stroke="#6b5647" stroke-width="1" fill="none" opacity=".7">
+      <path d="M60 66 q-14 2 -22 6"/><path d="M60 70 q-14 4 -20 9"/>
+      <path d="M80 66 q14 2 22 6"/><path d="M80 70 q14 4 20 9"/>
+    </g>
+  </svg></div>
+
+  <!-- Penguin on the bank on snowy nights -->
+  <div class="animal snowonly" id="penguin"><svg viewBox="0 0 60 92" overflow="visible">
+    <path d="M22 84 l-6 6 l11 0 z" fill="#e8952a"/><path d="M38 84 l6 6 l-11 0 z" fill="#e8952a"/>
+    <ellipse cx="30" cy="52" rx="22" ry="30" fill="#2b2b30"/>
+    <ellipse cx="30" cy="56" rx="14" ry="24" fill="#f3f3f0"/>
+    <path d="M9 46 q-5 16 3 26" stroke="#2b2b30" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M51 46 q5 16 -3 26" stroke="#2b2b30" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <circle cx="30" cy="22" r="15" fill="#2b2b30"/>
+    <path d="M18 24 a13 13 0 0 0 24 0 q-12 8 -24 0 z" fill="#f3f3f0"/>
+    <circle cx="25" cy="20" r="2" fill="#fff"/><circle cx="35" cy="20" r="2" fill="#fff"/>
+    <circle cx="25" cy="20" r="1" fill="#111"/><circle cx="35" cy="20" r="1" fill="#111"/>
+    <path d="M27 26 l6 0 l-3 5 z" fill="#e8952a"/>
+  </svg></div>
+
+  <!-- Seal lounging on the bank on snowy nights -->
+  <div class="animal snowonly" id="seal"><svg viewBox="0 0 120 60" overflow="visible">
+    <path d="M10 46 Q30 30 70 36 Q104 40 112 24 Q116 34 108 44 Q70 56 30 54 Q14 54 10 46 Z" fill="#8b95a0"/>
+    <ellipse cx="46" cy="48" rx="34" ry="10" fill="#9ba5b0"/>
+    <g fill="#6f7883"><circle cx="40" cy="42" r="2"/><circle cx="52" cy="46" r="2"/><circle cx="64" cy="42" r="2"/><circle cx="30" cy="46" r="2"/></g>
+    <path d="M108 24 q10 -4 14 4 q-6 6 -14 4 z" fill="#7f8892"/>
+    <path d="M40 50 q6 8 2 14" stroke="#7f8892" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <circle cx="16" cy="34" r="13" fill="#8b95a0"/>
+    <g class="eyes"><circle cx="12" cy="31" r="2.4" fill="#141414"/><circle cx="21" cy="31" r="2.4" fill="#141414"/></g>
+    <circle cx="8" cy="37" r="2.4" fill="#3a3f45"/>
+    <g stroke="#5f676f" stroke-width="1" opacity=".7" fill="none"><path d="M8 38 q-6 1 -10 3"/><path d="M8 40 q-6 2 -9 5"/></g>
+  </svg></div>
+
+  <!-- Yeti peeks out from behind the left tree on snowy nights -->
+  <div id="yeti"><svg viewBox="0 0 120 152" overflow="visible">
+    <path d="M30 150 Q18 110 26 78 Q20 40 60 30 Q100 40 94 78 Q102 110 90 150 Z" fill="#eef3f7"/>
+    <path d="M26 80 q-8 6 -2 14 M94 80 q8 6 2 14 M30 120 q-6 6 -2 14 M90 120 q6 6 2 14" stroke="#dbe4ec" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M28 70 Q10 84 16 112" stroke="#eef3f7" stroke-width="18" fill="none" stroke-linecap="round"/>
+    <path d="M92 70 Q110 84 104 112" stroke="#eef3f7" stroke-width="18" fill="none" stroke-linecap="round"/>
+    <ellipse cx="60" cy="54" rx="26" ry="24" fill="#f7fbfe"/>
+    <path d="M42 46 q18 -8 36 0" stroke="#c7d3dd" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <g class="eyes"><circle cx="50" cy="52" r="4" fill="#20303c"/><circle cx="70" cy="52" r="4" fill="#20303c"/></g>
+    <ellipse cx="60" cy="62" rx="5" ry="3" fill="#9fb0bd"/>
+    <path d="M50 70 q10 8 20 0" stroke="#8b9ba8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M56 70 l0 5 M64 70 l0 5" stroke="#fff" stroke-width="3"/>
+    <ellipse cx="40" cy="148" rx="14" ry="7" fill="#dbe4ec"/><ellipse cx="80" cy="148" rx="14" ry="7" fill="#dbe4ec"/>
+  </svg></div>
+
+  <!-- Moose standing up the hill on snowy nights -->
+  <div class="animal snowonly" id="moose"><svg viewBox="0 0 120 112" overflow="visible">
+    <rect x="86" y="70" width="7" height="34" fill="#5a4632"/>
+    <rect x="70" y="70" width="7" height="34" fill="#4d3b28"/>
+    <rect x="38" y="70" width="7" height="34" fill="#5a4632"/>
+    <rect x="24" y="70" width="7" height="34" fill="#4d3b28"/>
+    <ellipse cx="58" cy="58" rx="38" ry="20" fill="#6b5238"/>
+    <path d="M40 42 Q28 40 24 56 Q32 52 40 54 Z" fill="#6b5238"/>
+    <path d="M28 52 Q16 46 14 34 L6 34 Q4 48 16 58 Z" fill="#6b5238"/>
+    <ellipse cx="10" cy="30" rx="12" ry="9" fill="#6b5238"/>
+    <ellipse cx="2" cy="34" rx="7" ry="6" fill="#5a4632"/>
+    <ellipse cx="16" cy="22" rx="4" ry="6" fill="#5a4632"/>
+    <path d="M14 20 Q28 2 42 6 Q34 0 28 -2 Q24 2 14 10 Z" fill="#cdb891"/>
+    <path d="M10 20 Q-4 2 -18 6 Q-10 0 -4 -2 Q0 2 10 10 Z" fill="#cdb891"/>
+    <g class="eyes"><circle cx="8" cy="27" r="1.8" fill="#111"/></g>
+    <path d="M16 40 q-2 8 2 12" stroke="#5a4632" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M36 40 q22 -6 44 2" stroke="#eef3f7" stroke-width="3" fill="none" opacity=".8"/>
+  </svg></div>
+
   <!-- Eagle that flies across the sky left-to-right -->
   <div id="eagle"><svg viewBox="0 0 110 64" overflow="visible">
     <path d="M22 32 L4 26 L7 40 Z" fill="#5a3d22"/>
@@ -677,6 +802,19 @@
     <circle cx="42" cy="15" r="1.5" fill="#ffd23f"/><circle cx="48" cy="15" r="1.5" fill="#ffd23f"/>
     <g class="bwing"><path d="M40 24 Q14 8 2 26 Q16 26 20 34 Q12 30 40 33 Z" fill="#37304a"/></g>
     <g class="bwing2"><path d="M50 24 Q76 8 88 26 Q74 26 70 34 Q78 30 50 33 Z" fill="#37304a"/></g>
+  </svg></div>
+
+  <!-- Snowy owl flies across the sky on snowy nights -->
+  <div id="snowowl"><svg viewBox="0 0 110 64" overflow="visible">
+    <ellipse cx="52" cy="34" rx="24" ry="14" fill="#f4f6fa"/>
+    <g fill="#d7dde6"><circle cx="46" cy="32" r="1.5"/><circle cx="56" cy="38" r="1.5"/><circle cx="40" cy="38" r="1.5"/><circle cx="60" cy="30" r="1.5"/></g>
+    <circle cx="80" cy="30" r="13" fill="#f4f6fa"/>
+    <circle cx="75" cy="29" r="4.5" fill="#fff"/><circle cx="86" cy="29" r="4.5" fill="#fff"/>
+    <circle cx="75" cy="29" r="2.2" fill="#f5a623"/><circle cx="86" cy="29" r="2.2" fill="#f5a623"/>
+    <circle cx="75" cy="29" r="1" fill="#111"/><circle cx="86" cy="29" r="1" fill="#111"/>
+    <path d="M80 32 l4 0 l-2 4 z" fill="#e6a91e"/>
+    <g class="ewing"><path d="M44 30 Q50 2 72 8 Q58 16 56 30 Z" fill="#e7ecf3"/></g>
+    <g class="ewing2"><path d="M44 34 Q50 62 72 56 Q58 48 56 34 Z" fill="#dbe2ec"/></g>
   </svg></div>
 
   <!-- Tiger that walks out to the river, sits, and leaves -->
@@ -712,6 +850,20 @@
     <path d="M30 30 Q20 22 13 13" stroke="#9aa0a6" stroke-width="8" fill="none" stroke-linecap="round"/>
     <circle cx="13" cy="13" r="3" fill="#2a2a2e"/>
     <g class="eyes"><circle cx="46" cy="36" r="2.6" fill="#1a140e"/></g>
+  </svg></div>
+
+  <!-- Polar bear visits the river on snowy nights (instead of the wolf) -->
+  <div id="polarbear"><svg class="tbody" viewBox="0 0 150 96" overflow="visible">
+    <circle cx="122" cy="58" r="6" fill="#e3e9ee"/>
+    <rect x="96" y="62" width="16" height="26" rx="7" fill="#e3e9ee"/>
+    <rect x="44" y="62" width="16" height="26" rx="7" fill="#e3e9ee"/>
+    <ellipse cx="80" cy="54" rx="48" ry="28" fill="#eef2f5"/>
+    <circle cx="30" cy="46" r="20" fill="#eef2f5"/>
+    <circle cx="20" cy="30" r="6" fill="#e3e9ee"/><circle cx="40" cy="30" r="6" fill="#e3e9ee"/>
+    <ellipse cx="16" cy="50" rx="12" ry="9" fill="#f7fafc"/>
+    <circle cx="8" cy="50" r="3" fill="#2a2a2e"/>
+    <g class="eyes"><circle cx="26" cy="42" r="2.6" fill="#1a1a1a"/></g>
+    <path d="M14 56 q6 3 12 0" stroke="#b9c2ca" stroke-width="1.5" fill="none"/>
   </svg></div>
 
   <div class="stumpwrap left" id="stumpL"></div>
@@ -1337,7 +1489,31 @@ const JOKES = [
   "Eight legs, zero card sense — that's our spider.",
   "The spider says your moves are all tangled up. Rude.",
   "The croc's snoring again — zzz-actly no help at all.",
-  "The hippo vanished underwater for the night. Bold exit strategy."
+  "The hippo vanished underwater for the night. Bold exit strategy.",
+  // more parrot and fish jabs
+  "The parrot whistled at my winning move. Finally, good taste.",
+  "Polly wants a cracker AND a red seven.",
+  "The parrot repeats my jokes and gets more laughs. Rude.",
+  "That parrot's got a beak for gossip and none for cards.",
+  "Squawk all you like, parrot — that King still isn't moving.",
+  "The fish jumped up, judged the board, then belly-flopped back. Critic.",
+  "Something's fishy about that last move... oh wait, it's just the fish.",
+  "The fish surfaced for air and to heckle. Mostly to heckle.",
+  "That fish has scales but can't weigh up a good move.",
+  "The fish keeps jumping the queue. And the river.",
+  // jabs at the snowy-night crew
+  "The polar bear says it's a bit nippy for solitaire. Toughen up!",
+  "Polar bear's got a great poker face. And a great everything-else face.",
+  "The walrus has two tusks and STILL can't cut the deck.",
+  "The penguin's in a permanent tuxedo and still underdressed for losing.",
+  "Penguins can't fly, and apparently can't shuffle either.",
+  "The seal clapped for that move. Or it's just cold — hard to tell.",
+  "Seal of approval! Literally, the seal approves.",
+  "The snowy owl asked whooo's winning. Chilliest question all night.",
+  "Great antlers, moose. Shame you can't hold a single card with them.",
+  "That moose has stood there all night. Bold strategy.",
+  "The yeti peeked out, saw that move, and hid again. Can't blame him.",
+  "Big feet, bigger opinions — the yeti judges every play."
 ];
 
 // shown when the player makes a strong move (card home, a reveal, or a big move)
@@ -1462,6 +1638,7 @@ function sndOwl(){ if(muted) return; tone(420,0.18,'sine',0.14,360); setTimeout(
 function sndBat(){ if(muted) return; tone(2600,0.05,'square',0.05,3200); setTimeout(()=>tone(2400,0.05,'square',0.05,3000),70); }
 function sndWolf(){ if(muted) return; tone(300,0.55,'sine',0.16,520); setTimeout(()=>tone(540,0.7,'sine',0.16,300),320); }
 function sndWhistle(){ if(muted) return; tone(1800,0.12,'sine',0.10,2500); setTimeout(()=>tone(2300,0.14,'sine',0.09,1600),120); }
+function sndBear(){ if(muted) return; tone(150,0.5,'sawtooth',0.18,90); noise(0.5,0.12,220,'lowpass'); }
 
 /* ============================================================
    11. Bootstrap
@@ -1497,24 +1674,49 @@ function init(){
   scheduleCroc();
 
   // ---- day / night state: swaps the cast to match the sky (aligned to the 840s cycle) ----
-  const DN0 = Date.now(); let isNight = false;
+  const DN0 = Date.now(); let isNight = false, weather = 'day';
   function applyPhase(n){ if(n===isNight) return; isNight=n; document.body.classList.toggle('night', n);
     if(audioUnlocked){ if(n) sndOwl(); } }
-  function checkPhase(){ const p=((Date.now()-DN0)/1000)%840; applyPhase(p>=440 && p<762); }
-  setInterval(checkPhase, 5000); checkPhase();
+  // populate falling snow + rain
+  (function buildWeather(){
+    const snow=document.getElementById('snow'), rain=document.getElementById('rain');
+    if(snow) for(let i=0;i<46;i++){ const f=document.createElement('i'); const s=(3+Math.random()*5).toFixed(1);
+      f.style.left=(Math.random()*100).toFixed(1)+'%'; f.style.width=f.style.height=s+'px';
+      f.style.opacity=(0.5+Math.random()*0.5).toFixed(2);
+      f.style.animationDuration=(6+Math.random()*7).toFixed(1)+'s';
+      f.style.animationDelay=(-Math.random()*13).toFixed(1)+'s'; snow.appendChild(f); }
+    if(rain) for(let i=0;i<64;i++){ const d=document.createElement('i');
+      d.style.left=(Math.random()*100).toFixed(1)+'%'; d.style.height=(12+Math.random()*14).toFixed(0)+'px';
+      d.style.animationDuration=(0.5+Math.random()*0.45).toFixed(2)+'s';
+      d.style.animationDelay=(-Math.random()).toFixed(2)+'s'; rain.appendChild(d); }
+  })();
+  // day+night runs on an 840s loop; the night's weather rotates clear -> snow -> rain every 3rd cycle
+  function checkPhase(){
+    const elapsed=(Date.now()-DN0)/1000, p=elapsed%840;
+    const night=(p>=440 && p<762);
+    applyPhase(night);
+    const cycle=Math.floor(elapsed/840)%3;   // 0 clear, 1 snow, 2 rain
+    const snowing=night&&cycle===1, raining=night&&cycle===2;
+    document.body.classList.toggle('snowing', snowing);
+    document.body.classList.toggle('raining', raining);
+    weather = !night ? 'day' : (snowing?'snow':raining?'rain':'clear');
+  }
+  setInterval(checkPhase, 4000); checkPhase();
 
   // flyer: eagle by day, bat by night — crosses the sky every 3 minutes
-  function flyerGo(){ const e=document.getElementById(isNight?'bat':'eagle'); if(!e) return;
+  function flyerGo(){ const id = !isNight ? 'eagle' : (weather==='snow' ? 'snowowl' : 'bat');
+    const e=document.getElementById(id); if(!e) return;
     e.classList.remove('fly'); void e.offsetWidth; e.classList.add('fly');
-    if(audioUnlocked){ isNight?sndBat():sndEagle(); }
+    if(audioUnlocked){ id==='bat'?sndBat():id==='snowowl'?sndOwl():sndEagle(); }
     setTimeout(()=>e.classList.remove('fly'), 7200); }
   function scheduleFlyer(){ setTimeout(()=>{ if(!document.hidden) flyerGo(); scheduleFlyer(); }, 180000); }
   setTimeout(flyerGo, 12000); scheduleFlyer();
 
   // visitor: tiger by day, howling wolf by night — comes to the river, sits, then leaves
-  function visitorGo(){ const t=document.getElementById(isNight?'wolf':'tiger'); if(!t) return;
+  function visitorGo(){ let id='tiger'; if(isNight) id = (weather==='snow') ? 'polarbear' : 'wolf';
+    const t=document.getElementById(id); if(!t) return;
     t.classList.remove('visiting','leaving'); void t.offsetWidth; t.classList.add('visiting');
-    setTimeout(()=>{ if(audioUnlocked){ isNight?sndWolf():sndTiger(); } }, 2800);
+    setTimeout(()=>{ if(audioUnlocked){ id==='wolf'?sndWolf():id==='polarbear'?sndBear():sndTiger(); } }, 2800);
     setTimeout(()=>t.classList.add('leaving'), 12700);
     setTimeout(()=>t.classList.remove('visiting','leaving'), 16200); }
   function scheduleVisitor(){ setTimeout(()=>{ if(!document.hidden) visitorGo(); scheduleVisitor(); }, 120000 + Math.random()*60000); }
@@ -1546,6 +1748,18 @@ function init(){
     if(Math.random()<0.5) pulse(t,'extend',1750); else pulse(t,'look',1300); }
   function scheduleTurtle(){ setTimeout(()=>{ if(!document.hidden) turtleAct(); scheduleTurtle(); }, 6000 + Math.random()*8000); }
   scheduleTurtle();
+
+  // yeti peeks out from behind the left tree (snowy nights only), with a roar
+  function yetiPeek(){ if(!(isNight && weather==='snow')) return; const y=document.getElementById('yeti'); if(!y) return;
+    y.classList.remove('peek'); void y.offsetWidth; y.classList.add('peek');
+    setTimeout(()=>{ if(audioUnlocked) sndBear(); }, 3000);
+    setTimeout(()=>y.classList.remove('peek'), 9200); }
+  function scheduleYeti(){ setTimeout(()=>{ if(!document.hidden) yetiPeek(); scheduleYeti(); }, 18000 + Math.random()*22000); }
+  scheduleYeti();
+
+  // dev helper: force weather to preview it, e.g. __wx('snow'), __wx('rain'), __wx('clear')
+  window.__wx = (w)=>{ const b=document.body.classList;
+    b.toggle('night', w!=='day'); b.toggle('snowing', w==='snow'); b.toggle('raining', w==='rain'); };
 
   // dev helper: win-rate sampling (run __test(200) in console)
   window.__test = (n=200)=>{
