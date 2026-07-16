@@ -128,7 +128,7 @@
   @keyframes bobR{ 0%,100%{transform:scaleX(-1) translateY(0);} 50%{transform:scaleX(-1) translateY(-10px);} }
   .monkey.cheer{ animation: cheer .45s ease-in-out infinite; }
   /* bear fur (recolors to a polar bear on snowy nights) */
-  .monkey .fur{ fill:#7a5532; } .monkey .belly{ fill:#e3c79c; } .monkey .ie{ fill:#d9b88c; } .monkey .arm{ stroke:#6b4a2b; }
+  .monkey .fur{ fill:#4e3620; } .monkey .belly{ fill:#4e3620; } .monkey .ie{ fill:#4e3620; } .monkey .arm{ stroke:#3f2c19; }
   body.snowing .monkey .fur{ fill:#eef3f7; } body.snowing .monkey .belly{ fill:#dbe4ec; } body.snowing .monkey .ie{ fill:#cdd6de; } body.snowing .monkey .arm{ stroke:#d3dce4; }
 
   @keyframes cheer{ 0%,100%{transform:translateY(0) rotate(-3deg);} 50%{transform:translateY(-16px) rotate(3deg);} }
@@ -172,8 +172,9 @@
 
   #table{
     position:relative; width:min(100vw,480px); padding: var(--pad);
-    margin-top:2px;
+    margin-top:2px; touch-action:none;
   }
+  #dragghost .card{ cursor:grabbing; }
   .row{ display:grid; grid-template-columns: repeat(7, 1fr); gap: var(--gap); }
   #topRow{ margin-bottom: 8px; }
   #topRow .cell{ position:relative; height: var(--card-h); }
@@ -332,10 +333,10 @@
   #turtle{ width:66px; bottom:19%; left:55%; }
   #turtle .tneck{ transform-box:fill-box; transform-origin:100% 50%; transform:scaleX(.5); }
   #turtle.extend .tneck{ animation: tneckext 1.7s ease-in-out; }
-  @keyframes tneckext{ 0%,100%{transform:scaleX(.5)} 42%,58%{transform:scaleX(1)} }
+  @keyframes tneckext{ 0%,100%{transform:scaleX(.5)} 42%,58%{transform:scaleX(1.8)} }
   #turtle .thead{ transform-box:fill-box; }
   #turtle.extend .thead{ animation: theadext 1.7s ease-in-out; }
-  @keyframes theadext{ 0%,100%{transform:translateX(0)} 42%,58%{transform:translateX(-8px)} }
+  @keyframes theadext{ 0%,100%{transform:translateX(0)} 42%,58%{transform:translateX(-17px)} }
   #turtle.look .eyes{ animation: eyeroll 1.2s ease-in-out; }
   /* parrot (day): whistles (opens beak) and rolls its eyes to look around */
   #parrot .pbeak{ transform-box:fill-box; transform-origin:100% 0%; }
@@ -1036,9 +1037,8 @@ function autoToFoundation(loc, i){
   return false;
 }
 
-function onTap(e){
+function handleTap(el){
   if(busy) return;
-  const el = e.target.closest('[data-loc]');
   if(!el){ clearSel(); render(); return; }
   const loc = el.dataset.loc;
   const i = el.dataset.i!==undefined ? +el.dataset.i : -1;
@@ -1097,6 +1097,61 @@ function afterMove(){
   updateFinishBtn();
   if(isWin()) doWin();
 }
+
+/* ---- drag to move: hold a card, slide it, release on a destination ---- */
+let dragS = null;
+function onPointerDown(e){
+  if(busy) return;
+  const el = e.target.closest('[data-loc]');
+  dragS = { x0:e.clientX, y0:e.clientY, el, moved:false, ghost:null, src:null, cards:null };
+  if(el){
+    const loc=el.dataset.loc, i=el.dataset.i!==undefined?+el.dataset.i:-1;
+    if(loc==='waste' && state.waste.length){ dragS.src={loc,i:0}; dragS.cards=[topOf(state.waste)]; }
+    else if(loc[0]==='t'){ const col=+loc.slice(1);
+      if(i>=0 && state.tableau[col][i] && state.tableau[col][i].up){ const run=movableRun(col,i); if(run){ dragS.src={loc,i}; dragS.cards=run; } } }
+    else if(loc[0]==='f'){ const c=topOf(state.foundations[+loc.slice(1)]); if(c){ dragS.src={loc,i:0}; dragS.cards=[c]; } }
+  }
+}
+function onPointerMove(e){
+  if(!dragS) return;
+  if(!dragS.moved){
+    if(!dragS.src) return;
+    if(Math.hypot(e.clientX-dragS.x0, e.clientY-dragS.y0) < 7) return;
+    dragS.moved=true; makeGhost(); sel=dragS.src; render();
+  }
+  if(e.cancelable) e.preventDefault();
+  moveGhost(e.clientX, e.clientY);
+}
+function onPointerUp(e){
+  if(!dragS) return; const ds=dragS; dragS=null;
+  if(ds.ghost) ds.ghost.remove();
+  if(ds.moved && ds.src){
+    clearSel();
+    const tgt = destAt(e.clientX, e.clientY);
+    if(tgt && tgt.dataset.loc && tgt.dataset.loc!==ds.src.loc){
+      const loc=tgt.dataset.loc; let moved=false;
+      if(loc[0]==='f'){ if(ds.cards.length===1 && canToFoundation(ds.cards[0])){ moveToFoundation(ds.cards[0], ds.src); moved=true; } }
+      else if(loc[0]==='t'){ const col=+loc.slice(1); if(canStackTab(ds.cards[0], col)){ moveStackToTab(ds.cards, ds.src, col); moved=true; } }
+      if(moved){ afterMove(); return; }
+      sndNo();
+    }
+    render(); return;
+  }
+  handleTap(ds.el);   // it was a tap, not a drag
+}
+function makeGhost(){
+  const cs=getComputedStyle(document.documentElement);
+  const cw=parseInt(cs.getPropertyValue('--card-w')), ch=parseInt(cs.getPropertyValue('--card-h'));
+  const off=Math.round(ch*0.32);
+  const g=document.createElement('div'); g.id='dragghost';
+  g.style.cssText='position:fixed;left:0;top:0;width:'+cw+'px;z-index:9;pointer-events:none;opacity:.92;filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))';
+  dragS.cards.forEach((c,k)=>{ const d=document.createElement('div');
+    d.style.cssText='position:absolute;left:0;top:'+(k*off)+'px;width:'+cw+'px;height:'+ch+'px';
+    d.innerHTML=cardHTML(c); g.appendChild(d); });
+  document.body.appendChild(g); dragS.ghost=g; dragS.cw=cw; dragS.ch=ch;
+}
+function moveGhost(x,y){ if(dragS&&dragS.ghost){ dragS.ghost.style.transform='translate('+(x-dragS.cw/2)+'px,'+(y-dragS.ch*0.4)+'px)'; } }
+function destAt(x,y){ const el=document.elementFromPoint(x,y); return el ? el.closest('[data-loc]') : null; }
 
 /* ============================================================
    5. Auto-finish (only useful once nothing is face-down)
@@ -1564,8 +1619,23 @@ const JOKES = [
   "The snowy owl asked whooo's winning. Chilliest question all night.",
   "Great antlers, moose. Shame you can't hold a single card with them.",
   "That moose has stood there all night. Bold strategy.",
-  "The yeti peeked out, saw that move, and hid again. Can't blame him.",
-  "Big feet, bigger opinions — the yeti judges every play."
+  // the bears joking about themselves
+  "We're bears now, apparently. Still can't bear to lose.",
+  "Un-bear-ably good shuffle there, friend!",
+  "Two bears, one game — we're barely keeping it together.",
+  "I'd give that move a great big bear hug.",
+  "Grizzly business, this solitaire.",
+  "I could go for a nap, a salmon, and a win. In any order.",
+  "Paws for applause — nice play!",
+  // a few more about everyone
+  "The owl, the croc, the frog — everyone's a critic tonight.",
+  "The parrot rated that move 'squawk out of ten.'",
+  "Even the turtle poked his head out to watch that one.",
+  "The moose says draw-three is a-moose-ing.",
+  "The penguin gave that a formal, tuxedoed nod.",
+  "The walrus clapped. Slowly. Very slowly.",
+  "The spider says your web of moves is all tangled.",
+  "The fish leapt up, unimpressed, and flopped right back."
 ];
 
 // shown when the player makes a strong move (card home, a reveal, or a big move)
@@ -1702,7 +1772,10 @@ function init(){
   buildScene();
   newGame();
 
-  document.getElementById('table').addEventListener('click', onTap);
+  document.getElementById('table').addEventListener('pointerdown', onPointerDown);
+  document.addEventListener('pointermove', onPointerMove, {passive:false});
+  document.addEventListener('pointerup', onPointerUp);
+  document.addEventListener('pointercancel', onPointerUp);
   document.getElementById('newBtn').addEventListener('click', ()=>newGame());
   document.getElementById('winNew').addEventListener('click', ()=>newGame());
   document.getElementById('finishBtn').addEventListener('click', autoFinish);
