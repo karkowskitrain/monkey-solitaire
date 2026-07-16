@@ -108,6 +108,12 @@
   /* winter: the grass turns to snow */
   body.snowing #ground{ background: linear-gradient(#ffffff 0%, #eef4f8 40%, #dde8f0 100%); }
 
+  /* rocks + grass tufts scattered over the greenery */
+  #greenery{ position:fixed; left:0; right:0; bottom:0; height:54%; z-index:2; pointer-events:none; }
+  #greenery .scatter{ position:absolute; }
+  body.snowing #greenery .rk1{ fill:#c9d3db; } body.snowing #greenery .rk2{ fill:#aab6c0; }
+  body.snowing #greenery .rk3{ fill:#e4ebf1; } body.snowing #greenery .gt{ stroke:#cfe0e6; }
+
   /* ---------- Tree stumps + monkeys ---------- */
   .stumpwrap{ position:fixed; bottom:0; z-index:4; width:120px; pointer-events:none; }
   .stumpwrap.left{ left:0; }
@@ -128,8 +134,8 @@
   @keyframes bobR{ 0%,100%{transform:scaleX(-1) translateY(0);} 50%{transform:scaleX(-1) translateY(-10px);} }
   .monkey.cheer{ animation: cheer .45s ease-in-out infinite; }
   /* bear fur (recolors to a polar bear on snowy nights) */
-  .monkey .fur{ fill:#4e3620; } .monkey .belly{ fill:#4e3620; } .monkey .ie{ fill:#4e3620; } .monkey .arm{ stroke:#3f2c19; }
-  body.snowing .monkey .fur{ fill:#eef3f7; } body.snowing .monkey .belly{ fill:#dbe4ec; } body.snowing .monkey .ie{ fill:#cdd6de; } body.snowing .monkey .arm{ stroke:#d3dce4; }
+  .monkey .fur{ fill:#4e3620; } .monkey .belly{ fill:#caa06a; } .monkey .ie{ fill:#caa06a; } .monkey .arm{ stroke:#3f2c19; }
+  body.snowing .monkey .fur{ fill:#eef3f7; } body.snowing .monkey .belly{ fill:#c3cdd6; } body.snowing .monkey .ie{ fill:#c3cdd6; } body.snowing .monkey .arm{ stroke:#d3dce4; }
 
   @keyframes cheer{ 0%,100%{transform:translateY(0) rotate(-3deg);} 50%{transform:translateY(-16px) rotate(3deg);} }
 
@@ -172,9 +178,8 @@
 
   #table{
     position:relative; width:min(100vw,480px); padding: var(--pad);
-    margin-top:2px; touch-action:none;
+    margin-top:2px;
   }
-  #dragghost .card{ cursor:grabbing; }
   .row{ display:grid; grid-template-columns: repeat(7, 1fr); gap: var(--gap); }
   #topRow{ margin-bottom: 8px; }
   #topRow .cell{ position:relative; height: var(--card-h); }
@@ -460,6 +465,7 @@
   <div class="cloud" id="cloud1"></div>
   <div class="cloud" id="cloud2"></div>
   <div id="ground"></div>
+  <div id="greenery"></div>
 
   <!-- Fish that jumps out of the river and dives back in -->
   <div id="fish"><svg viewBox="0 0 50 34" overflow="visible">
@@ -601,9 +607,11 @@
     <!-- rock and grass tufts on the left bank -->
     <g>
       <path d="M20 192 q-3 -11 -8 -16 M24 192 q0 -13 3 -18 M58 198 q4 -10 9 -13 M54 199 q1 -9 -2 -15" stroke="#2f8a3a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <ellipse cx="38" cy="192" rx="17" ry="11" fill="#7e8489"/>
-      <ellipse cx="25" cy="198" rx="9" ry="6" fill="#686e74"/>
-      <path d="M28 186 q10 -6 18 0" stroke="#9aa0a5" stroke-width="2" fill="none"/>
+      <g transform="translate(38 196) scale(.5) translate(-38 -196)">
+        <ellipse cx="38" cy="192" rx="17" ry="11" fill="#7e8489"/>
+        <ellipse cx="25" cy="198" rx="9" ry="6" fill="#686e74"/>
+        <path d="M28 186 q10 -6 18 0" stroke="#9aa0a5" stroke-width="2" fill="none"/>
+      </g>
     </g>
    </g>
   </svg></div>
@@ -1098,60 +1106,8 @@ function afterMove(){
   if(isWin()) doWin();
 }
 
-/* ---- drag to move: hold a card, slide it, release on a destination ---- */
-let dragS = null;
-function onPointerDown(e){
-  if(busy) return;
-  const el = e.target.closest('[data-loc]');
-  dragS = { x0:e.clientX, y0:e.clientY, el, moved:false, ghost:null, src:null, cards:null };
-  if(el){
-    const loc=el.dataset.loc, i=el.dataset.i!==undefined?+el.dataset.i:-1;
-    if(loc==='waste' && state.waste.length){ dragS.src={loc,i:0}; dragS.cards=[topOf(state.waste)]; }
-    else if(loc[0]==='t'){ const col=+loc.slice(1);
-      if(i>=0 && state.tableau[col][i] && state.tableau[col][i].up){ const run=movableRun(col,i); if(run){ dragS.src={loc,i}; dragS.cards=run; } } }
-    else if(loc[0]==='f'){ const c=topOf(state.foundations[+loc.slice(1)]); if(c){ dragS.src={loc,i:0}; dragS.cards=[c]; } }
-  }
-}
-function onPointerMove(e){
-  if(!dragS) return;
-  if(!dragS.moved){
-    if(!dragS.src) return;
-    if(Math.hypot(e.clientX-dragS.x0, e.clientY-dragS.y0) < 7) return;
-    dragS.moved=true; makeGhost(); sel=dragS.src; render();
-  }
-  if(e.cancelable) e.preventDefault();
-  moveGhost(e.clientX, e.clientY);
-}
-function onPointerUp(e){
-  if(!dragS) return; const ds=dragS; dragS=null;
-  if(ds.ghost) ds.ghost.remove();
-  if(ds.moved && ds.src){
-    clearSel();
-    const tgt = destAt(e.clientX, e.clientY);
-    if(tgt && tgt.dataset.loc && tgt.dataset.loc!==ds.src.loc){
-      const loc=tgt.dataset.loc; let moved=false;
-      if(loc[0]==='f'){ if(ds.cards.length===1 && canToFoundation(ds.cards[0])){ moveToFoundation(ds.cards[0], ds.src); moved=true; } }
-      else if(loc[0]==='t'){ const col=+loc.slice(1); if(canStackTab(ds.cards[0], col)){ moveStackToTab(ds.cards, ds.src, col); moved=true; } }
-      if(moved){ afterMove(); return; }
-      sndNo();
-    }
-    render(); return;
-  }
-  handleTap(ds.el);   // it was a tap, not a drag
-}
-function makeGhost(){
-  const cs=getComputedStyle(document.documentElement);
-  const cw=parseInt(cs.getPropertyValue('--card-w')), ch=parseInt(cs.getPropertyValue('--card-h'));
-  const off=Math.round(ch*0.32);
-  const g=document.createElement('div'); g.id='dragghost';
-  g.style.cssText='position:fixed;left:0;top:0;width:'+cw+'px;z-index:9;pointer-events:none;opacity:.92;filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))';
-  dragS.cards.forEach((c,k)=>{ const d=document.createElement('div');
-    d.style.cssText='position:absolute;left:0;top:'+(k*off)+'px;width:'+cw+'px;height:'+ch+'px';
-    d.innerHTML=cardHTML(c); g.appendChild(d); });
-  document.body.appendChild(g); dragS.ghost=g; dragS.cw=cw; dragS.ch=ch;
-}
-function moveGhost(x,y){ if(dragS&&dragS.ghost){ dragS.ghost.style.transform='translate('+(x-dragS.cw/2)+'px,'+(y-dragS.ch*0.4)+'px)'; } }
-function destAt(x,y){ const el=document.elementFromPoint(x,y); return el ? el.closest('[data-loc]') : null; }
+/* ---- tap to move ---- */
+function onTap(e){ handleTap(e.target.closest('[data-loc]')); }
 
 /* ============================================================
    5. Auto-finish (only useful once nothing is face-down)
@@ -1665,6 +1621,41 @@ function buildScene(){
   monkeys.push({m:document.getElementById('monkeyL'), s:document.getElementById('signL')});
   monkeys.push({m:document.getElementById('monkeyR'), s:document.getElementById('signR')});
   monkeys.forEach((mk,idx)=> scheduleMonkey(mk, 4000 + idx*3000 + Math.random()*3000));
+  buildGreenery();
+}
+
+/* scatter little rocks and grass tufts at random across the greenery */
+function buildGreenery(){
+  const host = document.getElementById('greenery');
+  if(!host) return;
+  const rockSVG = (s)=>`<svg width="${44*s}" height="${30*s}" viewBox="0 0 44 30" overflow="visible">
+      <ellipse class="rk1" cx="22" cy="20" rx="16" ry="9" fill="#7e8489"/>
+      <ellipse class="rk2" cx="13" cy="24" rx="8" ry="5" fill="#686e74"/>
+      <path class="rk3" d="M11 15 q11 -6 20 0" stroke="none" fill="none"/>
+      <path d="M11 15 q11 -6 20 0" stroke="#9aa0a5" stroke-width="2" fill="none"/>
+    </svg>`;
+  const grassSVG = (s)=>`<svg width="${34*s}" height="${26*s}" viewBox="0 0 34 26" overflow="visible">
+      <path class="gt" d="M6 26 q-3 -12 -7 -17 M10 26 q0 -14 3 -19 M17 26 q1 -15 5 -18 M23 26 q3 -12 8 -16 M28 26 q4 -10 6 -13"
+        stroke="#2f8a3a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    </svg>`;
+  let html='';
+  // a cluster of rocks
+  const rockN = 7 + (Math.random()*4|0);
+  for(let k=0;k<rockN;k++){
+    const s = 0.4 + Math.random()*0.7;
+    const left = 4 + Math.random()*92;               // vw across
+    const bottom = 2 + Math.random()*46;             // % up the greenery
+    html += `<div class="scatter" style="left:${left.toFixed(1)}%;bottom:${bottom.toFixed(1)}%;transform:scale(${(0.85+Math.random()*0.5).toFixed(2)});opacity:${(0.82+Math.random()*0.18).toFixed(2)}">${rockSVG(s)}</div>`;
+  }
+  // grass tufts sprinkled around
+  const grassN = 14 + (Math.random()*8|0);
+  for(let k=0;k<grassN;k++){
+    const s = 0.6 + Math.random()*0.8;
+    const left = 2 + Math.random()*96;
+    const bottom = 1 + Math.random()*48;
+    html += `<div class="scatter" style="left:${left.toFixed(1)}%;bottom:${bottom.toFixed(1)}%;transform:scaleX(${Math.random()<.5?-1:1});opacity:${(0.8+Math.random()*0.2).toFixed(2)}">${grassSVG(s)}</div>`;
+  }
+  host.innerHTML = html;
 }
 function setMonkeyCheer(on){ monkeys.forEach(mk=> mk.m.classList.toggle('cheer', on)); }
 
@@ -1772,10 +1763,7 @@ function init(){
   buildScene();
   newGame();
 
-  document.getElementById('table').addEventListener('pointerdown', onPointerDown);
-  document.addEventListener('pointermove', onPointerMove, {passive:false});
-  document.addEventListener('pointerup', onPointerUp);
-  document.addEventListener('pointercancel', onPointerUp);
+  document.getElementById('table').addEventListener('click', onTap);
   document.getElementById('newBtn').addEventListener('click', ()=>newGame());
   document.getElementById('winNew').addEventListener('click', ()=>newGame());
   document.getElementById('finishBtn').addEventListener('click', autoFinish);
