@@ -103,7 +103,10 @@
     position:fixed; left:0; right:0; bottom:0; height:54%; z-index:1;
     background: linear-gradient(#a6db78 0%, #95cf63 34%, #84c552 70%, #75b945 100%);
     border-top-left-radius:55% 60px; border-top-right-radius:55% 60px;
+    transition: background 1.2s ease;
   }
+  /* winter: the grass turns to snow */
+  body.snowing #ground{ background: linear-gradient(#ffffff 0%, #eef4f8 40%, #dde8f0 100%); }
 
   /* ---------- Tree stumps + monkeys ---------- */
   .stumpwrap{ position:fixed; bottom:0; z-index:4; width:120px; pointer-events:none; }
@@ -124,6 +127,9 @@
   @keyframes bob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
   @keyframes bobR{ 0%,100%{transform:scaleX(-1) translateY(0);} 50%{transform:scaleX(-1) translateY(-10px);} }
   .monkey.cheer{ animation: cheer .45s ease-in-out infinite; }
+  /* bear fur (recolors to a polar bear on snowy nights) */
+  .monkey .fur{ fill:#7a5532; } .monkey .belly{ fill:#e3c79c; } .monkey .ie{ fill:#d9b88c; } .monkey .arm{ stroke:#6b4a2b; }
+  body.snowing .monkey .fur{ fill:#eef3f7; } body.snowing .monkey .belly{ fill:#dbe4ec; } body.snowing .monkey .ie{ fill:#cdd6de; } body.snowing .monkey .arm{ stroke:#d3dce4; }
 
   @keyframes cheer{ 0%,100%{transform:translateY(0) rotate(-3deg);} 50%{transform:translateY(-16px) rotate(3deg);} }
 
@@ -267,6 +273,11 @@
   #snake{ transform-box:fill-box; transform-origin:79% 0%; animation: snakesway 5s ease-in-out infinite; }
   #possum{ transform-box:fill-box; transform-origin:48% 0%; animation: snakesway 5s ease-in-out infinite; }
   @keyframes snakesway{ 0%{transform:rotate(0)} 25%{transform:rotate(7deg)} 50%{transform:rotate(0)} 75%{transform:rotate(-7deg)} 100%{transform:rotate(0)} }
+  /* web grows from small to big as the moon crosses (same 840s cycle); spider patrols in a circle */
+  .web .webwrap{ transform-box:fill-box; transform-origin:48% 6%; animation: webgrow 840s linear infinite; }
+  @keyframes webgrow{ 0%,45%{transform:scale(.18)} 90%{transform:scale(1)} 100%{transform:scale(.18)} }
+  .web .spider{ transform-box:fill-box; transform-origin:center; animation: spidercircle 6s linear infinite; }
+  @keyframes spidercircle{ 0%{transform:translate(9px,0)} 12.5%{transform:translate(6px,6px)} 25%{transform:translate(0,9px)} 37.5%{transform:translate(-6px,6px)} 50%{transform:translate(-9px,0)} 62.5%{transform:translate(-6px,-6px)} 75%{transform:translate(0,-9px)} 87.5%{transform:translate(6px,-6px)} 100%{transform:translate(9px,0)} }
   .stongue{ transform-box:fill-box; transform-origin:top center; transform:scaleY(0); opacity:0; }
   #snake.flick .stongue{ animation: flicktongue .55s ease-in-out; }
   @keyframes flicktongue{ 0%{transform:scaleY(0);opacity:0} 30%{transform:scaleY(1);opacity:1} 70%{transform:scaleY(1);opacity:1} 100%{transform:scaleY(0);opacity:0} }
@@ -374,6 +385,9 @@
   /* snowy night only (arctic animals) */
   .snowonly{ opacity:0; transition: opacity 1s ease; }
   body.night.snowing .snowonly{ opacity:1; transition-delay:1.2s; }
+  /* snow settling on the treetops in winter */
+  .snowcap{ opacity:0; transition: opacity 1.2s ease; }
+  body.snowing .snowcap{ opacity:1; }
 
   /* bat = night-time flyer (reuses the eagle's flight path) */
   #bat{ position:fixed; z-index:4; top:8%; left:0; width:76px; opacity:0; pointer-events:none; }
@@ -389,7 +403,6 @@
   #wolf.visiting{ opacity:1; animation: tigervisit 16s ease-in-out forwards; }
   #wolf.leaving .tbody{ transform: scaleX(-1); }
   /* arctic cast for snowy nights */
-  #polarbear{ width:82px; bottom:32%; left:63%; }
   #walrus{ width:118px; bottom:33%; left:50%; transform:translateX(-50%); }
   #walrus .eyes{ animation: look 12s ease-in-out infinite; }
   #penguin{ width:46px; bottom:19%; left:61%; }
@@ -400,18 +413,6 @@
   #moose.visiting{ opacity:1; animation: tigervisit 16s ease-in-out forwards; }
   #moose.leaving .tbody{ transform: scaleX(-1); }
   #moose .eyes{ animation: look 11s ease-in-out infinite; }
-  /* yeti peeks out from behind the left tree on snowy nights */
-  #yeti{ position:fixed; z-index:2; bottom:30%; left:0; width:122px; opacity:0; pointer-events:none; }
-  #yeti svg{ width:100%; height:auto; display:block; overflow:visible; }
-  #yeti.peek{ animation: yetipeek 9s ease-in-out; }
-  @keyframes yetipeek{
-    0%   { transform: translateX(-95%); opacity:0; }
-    16%  { transform: translateX(-16%); opacity:1; }
-    30%  { transform: translateX(-2%);  opacity:1; }
-    72%  { transform: translateX(-2%);  opacity:1; }
-    86%  { transform: translateX(-22%); opacity:1; }
-    100% { transform: translateX(-95%); opacity:0; }
-  }
 
   /* weather overlays: snow on the 2nd night, rain on the 3rd (sunny by day) */
   #snow, #rain{ position:fixed; inset:0; z-index:6; pointer-events:none; overflow:hidden; opacity:0; transition: opacity 1.5s ease; }
@@ -490,6 +491,7 @@
     </g>
     <g fill="#256b2c" opacity=".8"><circle cx="250" cy="256" r="40"/><circle cx="188" cy="262" r="34"/></g>
     <g fill="#3a9444" opacity=".55"><circle cx="222" cy="182" r="32"/><circle cx="286" cy="218" r="24"/></g>
+    <g class="snowcap" fill="#f4f8fb"><ellipse cx="162" cy="132" rx="34" ry="18"/><ellipse cx="228" cy="120" rx="58" ry="26"/><ellipse cx="288" cy="164" rx="40" ry="20"/></g>
     <!-- extended branch; the snake hangs from the middle of it (opposite the owl) -->
     <path d="M210 452 Q256 442 300 452" stroke="#5e4026" stroke-width="12" fill="none" stroke-linecap="round"/>
     <g id="snake" class="dayonly">
@@ -502,6 +504,7 @@
     </g>
     <!-- POSSUM hangs from the branch at night (replaces the snake, also sways) -->
     <g id="possum" class="wetnightonly">
+     <g transform="translate(250 452) scale(.5) translate(-250 -452)">
       <path d="M244 450 q-14 -8 -18 4 q-3 12 12 12" stroke="#b9bec3" stroke-width="7" fill="none" stroke-linecap="round"/>
       <path d="M250 452 q6 -2 6 8" stroke="#b9bec3" stroke-width="7" fill="none" stroke-linecap="round"/>
       <ellipse cx="256" cy="512" rx="21" ry="44" fill="#8f959b"/>
@@ -513,6 +516,7 @@
       <circle cx="243" cy="556" r="3.4" fill="#e0a6b4"/><circle cx="269" cy="556" r="3.4" fill="#e0a6b4"/>
       <circle cx="249" cy="566" r="2.6" fill="#111"/><circle cx="263" cy="566" r="2.6" fill="#111"/>
       <circle cx="256" cy="598" r="4" fill="#e0a6b4"/>
+     </g>
     </g>
   </svg></div>
 
@@ -533,6 +537,7 @@
     </g>
     <g fill="#256b2c" opacity=".8"><circle cx="50" cy="256" r="40"/><circle cx="112" cy="262" r="34"/></g>
     <g fill="#3a9444" opacity=".55"><circle cx="78" cy="180" r="32"/><circle cx="14" cy="216" r="24"/></g>
+    <g class="snowcap" fill="#f4f8fb"><ellipse cx="138" cy="132" rx="34" ry="18"/><ellipse cx="72" cy="120" rx="58" ry="26"/><ellipse cx="12" cy="164" rx="40" ry="20"/></g>
     <!-- tree hollow (the "hole") with a short branch, owl raised up to it -->
     <ellipse cx="104" cy="452" rx="15" ry="22" fill="#3a2614"/>
     <ellipse cx="104" cy="452" rx="10" ry="16" fill="#281a0d"/>
@@ -561,22 +566,25 @@
       <path class="owlmouth" d="M47.5 438 L52.5 438 L50 444 Z" fill="#a85610"/>
       <path d="M44 453 l0 6 M50 453 l0 6 M56 453 l0 6" stroke="#e08a2a" stroke-width="2"/>
     </g>
-    <!-- SPIDER WEB in this tree's fork at night -->
+    <!-- SPIDER WEB in this tree's fork at night; web grows with the moon, spider circles -->
     <g class="wetnightonly web">
+     <g class="webwrap">
       <g stroke="#cfd6da" stroke-width="1.2" fill="none" opacity=".8">
         <path d="M108 508 L88 466"/><path d="M108 508 L128 470"/><path d="M108 508 L140 486"/>
         <path d="M108 508 L146 508"/><path d="M108 508 L136 552"/><path d="M108 508 L104 556"/><path d="M108 508 L76 530"/>
         <path d="M106 478 L130 484 L138 506 L130 530 L110 540 L88 530 L82 504 L90 484 Z" opacity=".7"/>
         <path d="M108 492 L126 498 L132 512 L122 526 L104 524 L98 508 Z" opacity=".7"/>
       </g>
-      <line x1="110" y1="470" x2="110" y2="500" stroke="#cfd6da" stroke-width="1"/>
-      <ellipse cx="110" cy="508" rx="6" ry="7" fill="#26242b"/>
-      <circle cx="110" cy="500" r="3.4" fill="#26242b"/>
-      <g stroke="#26242b" stroke-width="1.6" fill="none" stroke-linecap="round">
-        <path d="M106 504 q-10 -4 -14 -12"/><path d="M106 508 q-12 0 -16 8"/><path d="M106 512 q-10 4 -12 12"/>
-        <path d="M114 504 q10 -4 14 -12"/><path d="M114 508 q12 0 16 8"/><path d="M114 512 q10 4 12 12"/>
+      <g class="spider">
+        <ellipse cx="110" cy="508" rx="6" ry="7" fill="#26242b"/>
+        <circle cx="110" cy="500" r="3.4" fill="#26242b"/>
+        <g stroke="#26242b" stroke-width="1.6" fill="none" stroke-linecap="round">
+          <path d="M106 504 q-10 -4 -14 -12"/><path d="M106 508 q-12 0 -16 8"/><path d="M106 512 q-10 4 -12 12"/>
+          <path d="M114 504 q10 -4 14 -12"/><path d="M114 508 q12 0 16 8"/><path d="M114 512 q10 4 12 12"/>
+        </g>
+        <circle cx="108" cy="499" r="1" fill="#e0a6b4"/><circle cx="112" cy="499" r="1" fill="#e0a6b4"/>
       </g>
-      <circle cx="108" cy="499" r="1" fill="#e0a6b4"/><circle cx="112" cy="499" r="1" fill="#e0a6b4"/>
+     </g>
     </g>
   </svg></div>
 
@@ -759,21 +767,6 @@
     <g stroke="#5f676f" stroke-width="1" opacity=".7" fill="none"><path d="M8 38 q-6 1 -10 3"/><path d="M8 40 q-6 2 -9 5"/></g>
   </svg></div>
 
-  <!-- Yeti peeks out from behind the left tree on snowy nights -->
-  <div id="yeti"><svg viewBox="0 0 120 152" overflow="visible">
-    <path d="M30 150 Q18 110 26 78 Q20 40 60 30 Q100 40 94 78 Q102 110 90 150 Z" fill="#eef3f7"/>
-    <path d="M26 80 q-8 6 -2 14 M94 80 q8 6 2 14 M30 120 q-6 6 -2 14 M90 120 q6 6 2 14" stroke="#dbe4ec" stroke-width="4" fill="none" stroke-linecap="round"/>
-    <path d="M28 70 Q10 84 16 112" stroke="#eef3f7" stroke-width="18" fill="none" stroke-linecap="round"/>
-    <path d="M92 70 Q110 84 104 112" stroke="#eef3f7" stroke-width="18" fill="none" stroke-linecap="round"/>
-    <ellipse cx="60" cy="54" rx="26" ry="24" fill="#f7fbfe"/>
-    <path d="M42 46 q18 -8 36 0" stroke="#c7d3dd" stroke-width="5" fill="none" stroke-linecap="round"/>
-    <g class="eyes"><circle cx="50" cy="52" r="4" fill="#20303c"/><circle cx="70" cy="52" r="4" fill="#20303c"/></g>
-    <ellipse cx="60" cy="62" rx="5" ry="3" fill="#9fb0bd"/>
-    <path d="M50 70 q10 8 20 0" stroke="#8b9ba8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M56 70 l0 5 M64 70 l0 5" stroke="#fff" stroke-width="3"/>
-    <ellipse cx="40" cy="148" rx="14" ry="7" fill="#dbe4ec"/><ellipse cx="80" cy="148" rx="14" ry="7" fill="#dbe4ec"/>
-  </svg></div>
-
   <!-- Moose visits the river on snowy nights (instead of the wolf/tiger) -->
   <div id="moose"><svg class="tbody" viewBox="0 0 120 112" overflow="visible">
     <rect x="86" y="70" width="7" height="34" fill="#5a4632"/>
@@ -848,32 +841,33 @@
     <g stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"><path d="M36 25 v7"/><path d="M25 30 l3 6"/><path d="M47 30 l-3 6"/></g>
   </svg></div>
 
-  <!-- Howling wolf that visits the river at night -->
+  <!-- Wolf that visits the river on clear/rain nights -->
   <div id="wolf"><svg class="tbody" viewBox="0 0 150 96" overflow="visible">
-    <path d="M118 56 q28 -2 26 -26 q-2 -10 -12 -12" stroke="#737a82" stroke-width="12" fill="none" stroke-linecap="round"/>
-    <rect x="96" y="64" width="12" height="22" rx="5" fill="#6a7178"/>
-    <rect x="46" y="64" width="12" height="22" rx="5" fill="#6a7178"/>
-    <ellipse cx="80" cy="56" rx="44" ry="24" fill="#7e858c"/>
-    <ellipse cx="78" cy="65" rx="33" ry="13" fill="#9aa0a6"/>
-    <circle cx="44" cy="40" r="18" fill="#7e858c"/>
-    <path d="M40 24 l-4 -13 l10 7 z" fill="#6a7178"/><path d="M56 24 l4 -13 l-10 7 z" fill="#6a7178"/>
-    <path d="M30 30 Q20 22 13 13" stroke="#9aa0a6" stroke-width="8" fill="none" stroke-linecap="round"/>
-    <circle cx="13" cy="13" r="3" fill="#2a2a2e"/>
-    <g class="eyes"><circle cx="46" cy="36" r="2.6" fill="#1a140e"/></g>
-  </svg></div>
-
-  <!-- Polar bear stands in the snow scene -->
-  <div class="animal snowonly" id="polarbear"><svg viewBox="0 0 150 96" overflow="visible">
-    <circle cx="122" cy="58" r="6" fill="#e3e9ee"/>
-    <rect x="96" y="62" width="16" height="26" rx="7" fill="#e3e9ee"/>
-    <rect x="44" y="62" width="16" height="26" rx="7" fill="#e3e9ee"/>
-    <ellipse cx="80" cy="54" rx="48" ry="28" fill="#eef2f5"/>
-    <circle cx="30" cy="46" r="20" fill="#eef2f5"/>
-    <circle cx="20" cy="30" r="6" fill="#e3e9ee"/><circle cx="40" cy="30" r="6" fill="#e3e9ee"/>
-    <ellipse cx="16" cy="50" rx="12" ry="9" fill="#f7fafc"/>
-    <circle cx="8" cy="50" r="3" fill="#2a2a2e"/>
-    <g class="eyes"><circle cx="26" cy="42" r="2.6" fill="#1a1a1a"/></g>
-    <path d="M14 56 q6 3 12 0" stroke="#b9c2ca" stroke-width="1.5" fill="none"/>
+    <!-- bushy tail -->
+    <path d="M118 56 Q142 50 146 30 Q152 42 145 56 Q139 72 118 70 Z" fill="#6f767e"/>
+    <!-- hind legs -->
+    <path d="M104 64 L100 90 L110 90 L112 66 Z" fill="#727982"/>
+    <path d="M96 66 L94 90 L103 90 L104 68 Z" fill="#838a92"/>
+    <!-- body -->
+    <path d="M36 52 Q64 38 100 46 Q122 51 122 66 Q120 80 92 80 Q54 80 36 66 Z" fill="#838a92"/>
+    <!-- belly -->
+    <path d="M44 66 Q66 76 96 74 Q90 80 70 80 Q50 80 44 66 Z" fill="#b0b6bd"/>
+    <!-- fore legs -->
+    <path d="M60 66 L56 90 L66 90 L67 68 Z" fill="#727982"/>
+    <path d="M50 66 L48 90 L57 90 L58 68 Z" fill="#838a92"/>
+    <!-- neck + head -->
+    <path d="M42 54 Q30 46 28 32 L48 32 Q50 46 54 58 Z" fill="#838a92"/>
+    <circle cx="30" cy="32" r="14" fill="#838a92"/>
+    <!-- pointed snout -->
+    <path d="M28 34 L6 39 L9 46 L30 44 Z" fill="#9aa1a9"/>
+    <circle cx="7" cy="40" r="2.6" fill="#26292d"/>
+    <path d="M11 46 q7 2 15 0" stroke="#565c64" stroke-width="1.4" fill="none"/>
+    <!-- pointed ears -->
+    <path d="M22 20 L18 6 L31 15 Z" fill="#6f767e"/>
+    <path d="M36 19 L44 8 L45 20 Z" fill="#6f767e"/>
+    <path d="M23 19 L21 10 L28 15 Z" fill="#4f555d"/>
+    <!-- eye -->
+    <g class="eyes"><circle cx="26" cy="30" r="2.4" fill="#141414"/></g>
   </svg></div>
 
   <div class="stumpwrap left" id="stumpL"></div>
@@ -1418,29 +1412,33 @@ const STUMP_SVG = `<svg class="stump" viewBox="0 0 140 120" xmlns="http://www.w3
 </svg>`;
 
 function monkeySVG(){
+  // a bear (turns into a polar bear on snowy nights via the .fur/.belly classes)
   return `<svg class="monkey-svg" viewBox="0 0 120 130" width="100%" xmlns="http://www.w3.org/2000/svg">
     <ellipse cx="60" cy="124" rx="30" ry="6" fill="rgba(0,0,0,0.15)"/>
     <!-- arms -->
-    <path d="M30 70 q-18 6 -16 26" stroke="#6b4a2b" stroke-width="11" fill="none" stroke-linecap="round"/>
-    <path d="M90 70 q18 6 16 26" stroke="#6b4a2b" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <path class="arm" d="M32 78 q-16 9 -14 26" fill="none" stroke-width="13" stroke-linecap="round"/>
+    <path class="arm" d="M88 78 q16 9 14 26" fill="none" stroke-width="13" stroke-linecap="round"/>
     <!-- body -->
-    <ellipse cx="60" cy="92" rx="26" ry="28" fill="#7a5532"/>
-    <ellipse cx="60" cy="96" rx="16" ry="19" fill="#d9b88c"/>
-    <!-- ears -->
-    <circle cx="26" cy="44" r="13" fill="#7a5532"/><circle cx="26" cy="44" r="7" fill="#d9b88c"/>
-    <circle cx="94" cy="44" r="13" fill="#7a5532"/><circle cx="94" cy="44" r="7" fill="#d9b88c"/>
+    <ellipse class="fur" cx="60" cy="94" rx="28" ry="28"/>
+    <ellipse class="belly" cx="60" cy="98" rx="17" ry="19"/>
+    <!-- feet -->
+    <ellipse class="fur" cx="44" cy="119" rx="11" ry="8"/><ellipse class="fur" cx="76" cy="119" rx="11" ry="8"/>
+    <ellipse class="belly" cx="44" cy="119" rx="5" ry="4"/><ellipse class="belly" cx="76" cy="119" rx="5" ry="4"/>
+    <!-- round ears -->
+    <circle class="fur" cx="34" cy="34" r="13"/><circle class="ie" cx="34" cy="34" r="6"/>
+    <circle class="fur" cx="86" cy="34" r="13"/><circle class="ie" cx="86" cy="34" r="6"/>
     <!-- head -->
-    <circle cx="60" cy="46" r="30" fill="#7a5532"/>
-    <ellipse cx="60" cy="54" rx="22" ry="20" fill="#e3c79c"/>
+    <circle class="fur" cx="60" cy="50" r="30"/>
+    <!-- muzzle -->
+    <ellipse class="belly" cx="60" cy="61" rx="18" ry="14"/>
     <!-- eyes -->
     <g class="eyes">
-      <circle cx="50" cy="42" r="7" fill="#fff"/><circle cx="70" cy="42" r="7" fill="#fff"/>
-      <circle cx="50" cy="43" r="3.4" fill="#2a1a0a"/><circle cx="70" cy="43" r="3.4" fill="#2a1a0a"/>
+      <circle cx="49" cy="46" r="5" fill="#fff"/><circle cx="71" cy="46" r="5" fill="#fff"/>
+      <circle cx="49" cy="47" r="2.6" fill="#2a1a0a"/><circle cx="71" cy="47" r="2.6" fill="#2a1a0a"/>
     </g>
     <!-- nose + mouth -->
-    <ellipse cx="55" cy="58" rx="2" ry="3" fill="#5b3a1d"/><ellipse cx="65" cy="58" rx="2" ry="3" fill="#5b3a1d"/>
-    <path d="M50 64 q10 8 20 0" stroke="#5b3a1d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M44 24 q16 -12 32 0" stroke="#6b4a2b" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="60" cy="56" rx="5.5" ry="3.6" fill="#2a1a0a"/>
+    <path d="M60 59 v5 M60 64 q-7 4 -12 1 M60 64 q7 4 12 1" stroke="#5b3a1d" stroke-width="2" fill="none" stroke-linecap="round"/>
   </svg>`;
 }
 
@@ -1805,13 +1803,6 @@ function init(){
   function scheduleTurtle(){ setTimeout(()=>{ if(!document.hidden) turtleAct(); scheduleTurtle(); }, 6000 + Math.random()*8000); }
   scheduleTurtle();
 
-  // yeti peeks out from behind the left tree (snowy nights only), with a roar
-  function yetiPeek(){ if(!(isNight && weather==='snow')) return; const y=document.getElementById('yeti'); if(!y) return;
-    y.classList.remove('peek'); void y.offsetWidth; y.classList.add('peek');
-    setTimeout(()=>{ if(audioUnlocked) sndBear(); }, 3000);
-    setTimeout(()=>y.classList.remove('peek'), 9200); }
-  function scheduleYeti(){ setTimeout(()=>{ if(!document.hidden) yetiPeek(); scheduleYeti(); }, 18000 + Math.random()*22000); }
-  scheduleYeti();
 
   // dev helper: force weather to preview it, e.g. __wx('snow'), __wx('rain'), __wx('clear')
   window.__wx = (w)=>{ const b=document.body.classList;
